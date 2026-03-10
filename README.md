@@ -9,5 +9,5 @@ This repo hosts the code for our "Greenwashing Game" site. Undertaken as our Pro
 
 ## Deployment
 1. Build the app for production with `npm run build`
-2. Deploy to GitHub Pages wiht `npm run deploy`
+2. Deploy to GitHub Pages with `npm run deploy`
 3. The website will be live at `https:///sse-project1-group19.github.io/greenwashing-game`
