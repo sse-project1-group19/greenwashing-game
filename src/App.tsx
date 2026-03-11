@@ -130,13 +130,37 @@
 
 // export default App;
 
+// function App() {
+//   return (
+//     <div className="flex items-center justify-center min-h-screen bg-slate-900">
+//       <h1 className="text-4xl font-bold text-white">Hello World!</h1>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+import { useState } from 'react';
+
 function App() {
+  const [count, setCount] = useState(0);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-slate-900">
-      <h1 className="text-4xl font-bold text-white">Hello World!</h1>
+      <div className="text-center">
+        <h1 className="text-5xl font-bold text-white mb-8">Click Counter</h1>
+        
+        <p className="text-6xl font-bold text-emerald-400 mb-12">{count}</p>
+        
+        <button
+          onClick={() => setCount(count + 1)}
+          className="w-32 h-32 rounded-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all flex items-center justify-center shadow-lg hover:shadow-emerald-500/50"
+        >
+          <span className="text-5xl">💰</span>
+        </button>
+      </div>
     </div>
   );
 }
 
 export default App;
-
