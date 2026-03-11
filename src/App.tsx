@@ -1,163 +1,121 @@
-// import { useState, useEffect } from 'react';
-// import { useGameStore } from './store/gameStore';
-// import { useGameEngine } from './engines/gameEngine';
-
-// function App() {
-//   const gameState = useGameStore((state) => state.gameState);
-//   const startNewGame = useGameStore((state) => state.startNewGame);
-//   const [screen, setScreen] = useState<'start' | 'game' | 'end'>('start');
-
-//   // Load saved game on mount
-//   useEffect(() => {
-//     const saved = localStorage.getItem('offsetTruth_save_1');
-//     if (saved) {
-//       try {
-//         const parsed = JSON.parse(saved);
-//         useGameStore.setState({ gameState: parsed });
-//         setScreen('game');
-//       } catch (e) {
-//         console.error('Failed to load save:', e);
-//         setScreen('start');
-//       }
-//     }
-//   }, []);
-
-//   // Start game engine when game screen is active
-//   const GameScreenWrapper = () => {
-//     useGameEngine();
-//     return <GameScreen />;
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-dark flex flex-col">
-//       {screen === 'start' && <StartScreen onStart={() => {
-//         startNewGame();
-//         setScreen('game');
-//       }} />}
-      
-//       {screen === 'game' && gameState.gameStatus === 'playing' && <GameScreenWrapper />}
-      
-//       {screen === 'game' && gameState.gameStatus !== 'playing' && (
-//         <EndScreen status={gameState.gameStatus} onRestart={() => {
-//           startNewGame();
-//           setScreen('game');
-//         }} />
-//       )}
-//     </div>
-//   );
-// }
-
-// function StartScreen({ onStart }: { onStart: () => void }) {
-//   return (
-//     <div className="flex-1 flex flex-col items-center justify-center p-4">
-//       <div className="text-center max-w-2xl">
-//         <h1 className="text-5xl font-bold mb-4 text-gradient-amber">
-//           Offset the Truth
-//         </h1>
-//         <p className="text-xl text-slate-400 mb-8">
-//           Become the CEO of the world's most profitable corporation. Hide your environmental crimes. Manage public perception. Win at any cost.
-//         </p>
-//         <button
-//           onClick={onStart}
-//           className="px-8 py-3 bg-rose-500 hover:bg-rose-600 rounded-lg font-bold text-lg transition-colors"
-//         >
-//           Start Game
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function GameScreen() {
-//   const gameState = useGameStore((state) => state.gameState);
-//   const formatMoney = (n: number) => `$${(n / 1000).toFixed(1)}K`;
-
-//   return (
-//     <div className="flex-1 flex flex-col p-4 gap-4">
-//       {/* Stats Bar */}
-//       <div className="grid grid-cols-3 gap-4 bg-slate-800 p-4 rounded-lg">
-//         <div className="text-center">
-//           <div className="text-2xl font-bold text-emerald-400">{formatMoney(gameState.money)}</div>
-//           <div className="text-sm text-slate-400">Money</div>
-//         </div>
-//         <div className="text-center">
-//           <div className="text-2xl font-bold text-amber-400">{gameState.publicPerception}%</div>
-//           <div className="text-sm text-slate-400">Public Perception</div>
-//         </div>
-//         <div className="text-center">
-//           <div className="text-2xl font-bold text-rose-400">{gameState.legalRisk}%</div>
-//           <div className="text-sm text-slate-400">Legal Risk</div>
-//         </div>
-//       </div>
-
-//       {/* Upgrades Grid - Placeholder */}
-//       <div className="flex-1 bg-slate-800 p-4 rounded-lg">
-//         <h2 className="text-xl font-bold mb-4">Upgrades (Coming Soon)</h2>
-//         <p className="text-slate-400">Build upgrade cards here</p>
-//       </div>
-
-//       {/* Game Log - Placeholder */}
-//       <div className="bg-slate-800 p-4 rounded-lg h-32">
-//         <h2 className="text-xl font-bold mb-2">Log</h2>
-//         <p className="text-slate-400">Turn {gameState.turn}</p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function EndScreen({ status, onRestart }: { status: string; onRestart: () => void }) {
-//   return (
-//     <div className="flex-1 flex flex-col items-center justify-center p-4">
-//       <div className="text-center max-w-2xl">
-//         <h1 className="text-4xl font-bold mb-4">
-//           {status === 'won' ? '🎉 You Won!' : '💀 Game Over'}
-//         </h1>
-//         <p className="text-xl text-slate-400 mb-8">
-//           {status === 'won'
-//             ? 'You successfully built a global empire while hiding your environmental crimes!'
-//             : 'Your company collapsed under the weight of scandal and public backlash.'}
-//         </p>
-//         <button
-//           onClick={onRestart}
-//           className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-bold text-lg transition-colors"
-//         >
-//           Play Again
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-// function App() {
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-slate-900">
-//       <h1 className="text-4xl font-bold text-white">Hello World!</h1>
-//     </div>
-//   );
-// }
-
-// export default App;
-
 import { useState } from 'react';
+import { Upgrade } from './types';
+
+
+  // Example Upgrades
+  const upgrades: Upgrade[] = [
+    {
+      id: 1,
+      name: 'Dodgy Carbon Credits',
+      description: 'Buy carbon credits from dubious sources to offset your emissions.',
+      cost: 20,
+      isGreenwashing: true,
+      negationPerTick: 5,
+      realWorldLink: {
+        company: 'Company A',
+        incident: 'Environmental Violation'
+      }
+    },
+    {
+      id: 2,
+      name: 'Green PR Campaign',
+      description: 'Launch a PR campaign to improve your company’s green image.',
+      cost: 50,
+      isGreenwashing: true,
+      negationPerTick: 10,
+      realWorldLink: {
+        company: 'Company B',
+        incident: 'Greenwashing Scandal'
+      }
+    }
+  ];
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [money, setMoney] = useState(0);
+  const [ownedUpgrades, setOwnedUpgrades] = useState<Upgrade[]>([]);
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-900">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-white mb-8">Click Counter</h1>
-        
-        <p className="text-6xl font-bold text-emerald-400 mb-12">{count}</p>
-        
-        <button
-          onClick={() => setCount(count + 1)}
+  // Handle purchasing an upgrade
+  const purchaseUpgrade = (upgrade: Upgrade) => {
+    if (money >= upgrade.cost) {
+      setMoney(money - upgrade.cost);
+      setOwnedUpgrades([...ownedUpgrades, upgrade]);
+    } else {
+      alert('Not enough money to purchase this upgrade!');
+    }
+  };
+
+  // Check if affordable
+  const canAfford = (upgrade: Upgrade) => money >= upgrade.cost; 
+  
+  // Check if owned
+  const isOwned = (id: number) => ownedUpgrades.includes(upgrades.find(u => u.id === id)!);
+
+  
+
+ return (
+    <div className="min-h-screen bg-slate-900 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-white mb-4">Offset the Truth</h1>
+          <p className="text-slate-400">A greenwashing clicker game</p>
+        </div>
+
+        {/* Money Display */}
+        <div className="bg-slate-800 rounded-lg p-6 mb-8 text-center">
+          <p className="text-slate-400 text-sm mb-2">Your Money</p>
+          <p className="text-5xl font-bold text-emerald-400">${money}</p>
+       </div>
+       
+
+       <button
+          onClick={() => setMoney(money + 1)}
           className="w-32 h-32 rounded-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all flex items-center justify-center shadow-lg hover:shadow-emerald-500/50"
         >
           <span className="text-5xl">💰</span>
         </button>
+  
+        {/* Upgrades Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {upgrades.map((upgrade) => (
+            <div
+              key={upgrade.id}
+              className="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-slate-600 transition-colors"
+            >
+              {/* Upgrade Name */}
+              <h3 className="text-lg font-bold text-white mb-2">{upgrade.name}</h3>
+
+              {/* Description */}
+              <p className="text-sm text-slate-400 mb-4">{upgrade.description}</p>
+
+              {/* Cost */}
+              <p className="text-amber-400 font-bold mb-4">Cost: ${upgrade.cost}</p>
+
+              {/* Real-world Link (if exists) */}
+              {upgrade.realWorldLink && (
+                <p className="text-xs text-slate-500 mb-4">
+                  📚 {upgrade.realWorldLink.company} - {upgrade.realWorldLink.incident}
+                </p>
+              )}
+
+              {/* Purchase Button */}
+              <button
+                onClick={() => purchaseUpgrade(upgrade)}
+                disabled={!canAfford(upgrade) || isOwned(upgrade.id)}
+                className={`w-full py-2 px-4 rounded font-bold transition-colors ${
+                  isOwned(upgrade.id)
+                    ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                    : canAfford(upgrade)
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer'
+                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                }`}
+              >
+                {isOwned(upgrade.id) ? '✓ Owned' : `Buy for $${upgrade.cost}`}
+              </button>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
