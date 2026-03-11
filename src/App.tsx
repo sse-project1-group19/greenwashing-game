@@ -91,7 +91,7 @@ function App() {
               {/* Cost */}
               <p className="text-amber-400 font-bold mb-4">Cost: ${upgrade.cost}</p>
 
-              {/* Real-world Link (if exists) */}
+              {/* Real-world Links */}
               {upgrade.realWorldLink && (
                 <p className="text-xs text-slate-500 mb-4">
                   📚 {upgrade.realWorldLink.company} - {upgrade.realWorldLink.incident}
