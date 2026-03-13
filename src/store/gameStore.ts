@@ -63,7 +63,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     if (state.ownedUpgrades.includes(upgrade)) {
-      console.warn(`Upgrade ${upgradeId} already owned`);
+      console.warn(`Upgrade ${upgrade.name} already owned`);
       return false;
     }
 
@@ -116,7 +116,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
 );
 
 
+// Helper function to calculate money per tick from upgrades
+export const calculateMoneyPerTick = (ownedUpgrades: Upgrade[]): number => {
+  const baseIncome = 10;
+  const upgradeIncome = ownedUpgrades.reduce((total, upgrade) => {
+    return total + (upgrade.moneyPerTick || 0);
+  }, 0);
+  return baseIncome + upgradeIncome;
+};
 
-
-
+// Helper function to calculate pollution per tick from upgrades
+export const calculatePollutionPerTick = (ownedUpgrades: Upgrade[]): number => {
+  const basePollution = 2;
+  const upgradePollution = ownedUpgrades.reduce((total, upgrade) => {
+    return total + (upgrade.pollutionPerTick || 0);
+  }, 0);
+  return basePollution + upgradePollution;
+};
   

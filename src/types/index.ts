@@ -5,6 +5,7 @@ interface Upgrade {
   cost: number,
   isGreenwashing?: boolean,
   moneyPerTick?: number,
+  pollutionPerTick?: number,
   negationPerTick?: number,
   realWorldLink?: {
     company: string,
