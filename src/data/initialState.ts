@@ -1,4 +1,4 @@
-import type { GameState } from '../types/game';
+import type { GameState } from '../types/index';
 
 export const createInitialGameState = (): GameState => ({
   gameStatus: 'not_started',

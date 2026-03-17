@@ -1,4 +1,4 @@
-import type { GameState, TickProfitBreakdown } from '../types/game';
+import type { GameState, TickProfitBreakdown } from '../types/index';
 
 const roundToTwoDecimals = (value: number): number => Math.round(value * 100) / 100;
 
