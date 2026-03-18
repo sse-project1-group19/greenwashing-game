@@ -34,9 +34,9 @@
 //         startNewGame();
 //         setScreen('game');
 //       }} />}
-      
+
 //       {screen === 'game' && gameState.gameStatus === 'playing' && <GameScreenWrapper />}
-      
+
 //       {screen === 'game' && gameState.gameStatus !== 'playing' && (
 //         <EndScreen status={gameState.gameStatus} onRestart={() => {
 //           startNewGame();
@@ -130,84 +130,69 @@
 
 // export default App;
 
-import { useGameStore } from './store/gameStore';
+import { useGameStore, calculateMoneyPerTick, calculatePollutionPerTick } from './store/gameStore';
+import { useGameEngine } from './engine/gameEngine';
 
 const formatMoney = (value: number): string => `$${value.toFixed(2)}`;
 
 function App() {
+  const { processTurn } = useGameEngine();
+
   const gameState = useGameStore((state) => state.gameState);
   const startNewGame = useGameStore((state) => state.startNewGame);
   const resetGame = useGameStore((state) => state.resetGame);
-  const setCompanyName = useGameStore((state) => state.setCompanyName);
-  const advanceTick = useGameStore((state) => state.advanceTick);
+
+  const moneyPerTick = gameState.baseMoneyPerTick + calculateMoneyPerTick(gameState.ownedUpgrades);
+  const pollutionPerTick = calculatePollutionPerTick(gameState.ownedUpgrades);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <div className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 p-6">
         <header className="rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-dark">
           <p className="mb-2 text-sm uppercase tracking-[0.2em] text-slate-400">Carbon Clicker</p>
-          <h1 className="mb-3 text-4xl font-bold text-gradient-amber">Profit calculation on tick</h1>
+          <h1 className="mb-3 text-4xl font-bold text-gradient-amber">Game State Debug</h1>
           <p className="max-w-3xl text-slate-300">
-            This build implements the first economic loop. Each tick calculates revenue,
-            subtracts operating cost, and adds the resulting net profit to the company balance.
+            Debug view for the new game state model. Upgrades drive money and pollution per tick via the game engine.
           </p>
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
-          <StatCard label="Game status" value={gameState.gameStatus} />
-          <StatCard label="Tick" value={String(gameState.tick)} />
+          <StatCard label="Game status" value={gameState.gameState} />
+          <StatCard label="Turn" value={String(gameState.turn)} />
           <StatCard label="Money" value={formatMoney(gameState.money)} accent="profit" />
+          <StatCard label="Money / tick" value={formatMoney(moneyPerTick)} accent="profit" />
           <StatCard
-            label="Revenue per tick"
-            value={formatMoney(gameState.baseRevenuePerTick * gameState.revenueMultiplier)}
+            label="Pollution / tick"
+            value={String(pollutionPerTick)}
+            accent={pollutionPerTick > 0 ? 'danger' : 'profit'}
           />
-          <StatCard
-            label="Operating cost per tick"
-            value={formatMoney(gameState.baseOperatingCostPerTick * gameState.costMultiplier)}
-          />
-          <StatCard
-            label="Net profit per tick"
-            value={formatMoney(gameState.lastTickProfit.netProfit)}
-            accent={gameState.lastTickProfit.netProfit >= 0 ? 'profit' : 'danger'}
-          />
+          <StatCard label="Perception" value={`${gameState.perception}%`} />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
           <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-            <h2 className="mb-4 text-xl font-semibold">Company setup</h2>
-
-            <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="companyName">
-              Company name
-            </label>
-            <input
-              id="companyName"
-              type="text"
-              value={gameState.companyName}
-              onChange={(event) => setCompanyName(event.target.value)}
-              className="mb-4 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-white outline-none ring-0 placeholder:text-slate-500"
-              placeholder="Enter a company name"
-            />
-
-            <div className="mt-4 flex flex-wrap gap-4">
+            <h2 className="mb-4 text-xl font-semibold">Controls</h2>
+            <div className="flex flex-wrap gap-4">
               <ActionButton onClick={startNewGame}>Start new game</ActionButton>
-              <ActionButton onClick={advanceTick}>Advance one tick</ActionButton>
+              <ActionButton onClick={processTurn}>Next Turn</ActionButton>
               <ActionButton onClick={resetGame} variant="secondary">Reset</ActionButton>
             </div>
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-            <h2 className="mb-4 text-xl font-semibold">Last tick breakdown</h2>
-            <dl className="space-y-3 text-sm text-slate-300">
-              <BreakdownRow label="Revenue" value={formatMoney(gameState.lastTickProfit.revenue)} />
-              <BreakdownRow
-                label="Operating cost"
-                value={formatMoney(gameState.lastTickProfit.operatingCost)}
-              />
-              <BreakdownRow
-                label="Net profit"
-                value={formatMoney(gameState.lastTickProfit.netProfit)}
-              />
-            </dl>
+            <h2 className="mb-4 text-xl font-semibold">Owned upgrades</h2>
+            {gameState.ownedUpgrades.length === 0 ? (
+              <p className="text-sm text-slate-400">No upgrades purchased yet.</p>
+            ) : (
+              <ul className="space-y-2 text-sm text-slate-300">
+                {gameState.ownedUpgrades.map((u) => (
+                  <li key={u.id} className="flex justify-between rounded-lg bg-slate-900 px-3 py-2">
+                    <span>{u.name}</span>
+                    <span className="text-emerald-400">+${u.moneyPerTick ?? 0}/tick</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
 
@@ -263,15 +248,6 @@ function ActionButton({ children, onClick, variant = 'primary' }: ActionButtonPr
     >
       {children}
     </button>
-  );
-}
-
-function BreakdownRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between rounded-lg bg-slate-900 px-3 py-2">
-      <dt>{label}</dt>
-      <dd className="font-semibold text-white">{value}</dd>
-    </div>
   );
 }
 

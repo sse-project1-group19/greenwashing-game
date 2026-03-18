@@ -17,10 +17,11 @@ interface Upgrade {
 interface GameState {
   money: number,
   ownedUpgrades: Upgrade[],
+  baseMoneyPerTick: number,
   pollution: number,
   turn: number,
   perception: number,
-  gameState: 'playing' | 'won' | 'lost'
+  gameState: 'not_started' | 'playing' | 'won' | 'lost'
 }
 
 export type { Upgrade, GameState };
