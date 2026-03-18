@@ -1,4 +1,4 @@
-interface Upgrade {
+export interface Upgrade {
   id: number,
   name: string,
   description: string,
@@ -13,6 +13,7 @@ interface Upgrade {
   }
 
 }
+export type GameStatus = 'not_started' | 'playing' | 'lost';
 
 interface GameState {
   money: number,
