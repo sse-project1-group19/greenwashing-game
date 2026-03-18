@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createInitialGameState } from '../data/initialState';
 import { applyTickProfit } from '../logic/profit';
-import type { GameStore } from '../types/game';
+import type { GameStore } from '../types/index';
 
 export const useGameStore = create<GameStore>((set) => ({
   gameState: createInitialGameState(),
