@@ -2,111 +2,110 @@ import { useGameStore } from './store/gameStore';
 
 const formatMoney = (value: number): string => `$${value.toFixed(2)}`;
 
+const boughtUpgradesPlaceholder = [
+  { id: 1, name: 'Carbon Capture Campaign', timesBought: 2 },
+  { id: 2, name: 'Sustainability Slogan Booster', timesBought: 4 },
+  { id: 3, name: 'Eco-Friendly Logo Refresh', timesBought: 1 },
+];
+
+const availableUpgradesPlaceholder = [
+  {
+    id: 1,
+    name: 'Greenwashing Social Ads',
+    price: 125,
+    revenuePerTick: 7,
+    operatingCostPerTick: 2,
+    environmentalDamagePerTick: 1,
+  },
+  {
+    id: 2,
+    name: 'Factory Throughput Optimizer',
+    price: 320,
+    revenuePerTick: 16,
+    operatingCostPerTick: 7,
+    environmentalDamagePerTick: 4,
+  },
+  {
+    id: 3,
+    name: 'Transparency Report Team',
+    price: 540,
+    revenuePerTick: 21,
+    operatingCostPerTick: 10,
+    environmentalDamagePerTick: undefined,
+  },
+];
+
 function App() {
   const gameState = useGameStore((state) => state.gameState);
   const startNewGame = useGameStore((state) => state.startNewGame);
   const resetGame = useGameStore((state) => state.resetGame);
-  const setCompanyName = useGameStore((state) => state.setCompanyName);
   const advanceTick = useGameStore((state) => state.advanceTick);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <div className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 p-6">
-        <header className="rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-dark">
+      <div className="mx-auto max-w-7xl p-6">
+        <header className="mb-6 rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-dark">
           <p className="mb-2 text-sm uppercase tracking-[0.2em] text-slate-400">Carbon Clicker</p>
-          <h1 className="mb-3 text-4xl font-bold text-gradient-amber">Profit calculation on tick</h1>
-          <p className="max-w-3xl text-slate-300">
-            This build implements the first economic loop. Each tick calculates revenue,
-            subtracts operating cost, and adds the resulting net profit to the company balance.
-          </p>
+          <h1 className="text-4xl font-bold text-gradient-amber">Three-column game view</h1>
         </header>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <StatCard label="Game status" value={gameState.gameStatus} />
-          <StatCard label="Tick" value={String(gameState.tick)} />
-          <StatCard label="Money" value={formatMoney(gameState.money)} accent="profit" />
-          <StatCard
-            label="Revenue per tick"
-            value={formatMoney(gameState.baseRevenuePerTick * gameState.revenueMultiplier)}
-          />
-          <StatCard
-            label="Operating cost per tick"
-            value={formatMoney(gameState.baseOperatingCostPerTick * gameState.costMultiplier)}
-          />
-          <StatCard
-            label="Net profit per tick"
-            value={formatMoney(gameState.lastTickProfit.netProfit)}
-            accent={gameState.lastTickProfit.netProfit >= 0 ? 'profit' : 'danger'}
-          />
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+        <section className="grid gap-6 grid-cols-3">
           <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-            <h2 className="mb-4 text-xl font-semibold">Company setup</h2>
+            <p className="text-sm uppercase tracking-[0.15em] text-slate-400">Total money</p>
+            <p className="mb-6 mt-2 text-5xl font-black text-emerald-400">{formatMoney(gameState.money)}</p>
 
-            <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="companyName">
-              Company name
-            </label>
-            <input
-              id="companyName"
-              type="text"
-              value={gameState.companyName}
-              onChange={(event) => setCompanyName(event.target.value)}
-              className="mb-4 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-white outline-none ring-0 placeholder:text-slate-500"
-              placeholder="Enter a company name"
-            />
-
-            <div className="mt-4 flex flex-wrap gap-4">
-              <ActionButton onClick={startNewGame}>Start new game</ActionButton>
+            <div className="space-y-3">
               <ActionButton onClick={advanceTick}>Advance one tick</ActionButton>
-              <ActionButton onClick={resetGame} variant="secondary">Reset</ActionButton>
+              <ActionButton onClick={startNewGame} variant="secondary">Start game</ActionButton>
+              <ActionButton onClick={resetGame} variant="secondary">Reset game</ActionButton>
+            </div>
+
+            <div className="mt-6 rounded-lg bg-slate-900 p-4 text-sm text-slate-300">
+              <p>Game status: {gameState.gameStatus}</p>
+              <p>Current tick: {gameState.tick}</p>
             </div>
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-            <h2 className="mb-4 text-xl font-semibold">Last tick breakdown</h2>
-            <dl className="space-y-3 text-sm text-slate-300">
-              <BreakdownRow label="Revenue" value={formatMoney(gameState.lastTickProfit.revenue)} />
-              <BreakdownRow
-                label="Operating cost"
-                value={formatMoney(gameState.lastTickProfit.operatingCost)}
-              />
-              <BreakdownRow
-                label="Net profit"
-                value={formatMoney(gameState.lastTickProfit.netProfit)}
-              />
-            </dl>
+            <h2 className="mb-4 text-xl font-semibold">Bought upgrades</h2>
+            <div className="space-y-3">
+              {boughtUpgradesPlaceholder.map((upgrade) => (
+                <div key={upgrade.id} className="rounded-lg border border-slate-600 bg-slate-900 p-4">
+                  <p className="text-lg font-semibold text-white">{upgrade.name}</p>
+                  <p className="mt-1 text-sm text-slate-300">Bought: {upgrade.timesBought}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
+            <h2 className="mb-4 text-xl font-semibold">Available upgrades</h2>
+            <div className="space-y-3">
+              {availableUpgradesPlaceholder.map((upgrade) => (
+                <div key={upgrade.id} className="rounded-lg border border-slate-600 bg-slate-900 p-4">
+                  <p className="mb-2 text-lg font-semibold text-white">{upgrade.name}</p>
+                  <dl className="space-y-1 text-sm text-slate-300">
+                    <BreakdownRow label="Price" value={formatMoney(upgrade.price)} />
+                    <BreakdownRow label="Revenue / tick" value={formatMoney(upgrade.revenuePerTick)} />
+                    <BreakdownRow
+                      label="Operating cost / tick"
+                      value={formatMoney(upgrade.operatingCostPerTick)}
+                    />
+                    <BreakdownRow
+                      label="Environmental damage"
+                      value={
+                        upgrade.environmentalDamagePerTick === undefined
+                          ? 'None'
+                          : String(upgrade.environmentalDamagePerTick)
+                      }
+                    />
+                  </dl>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
-
-        <section className="rounded-xl border border-slate-700 bg-slate-800 p-6">
-          <h2 className="mb-4 text-xl font-semibold">Current state snapshot</h2>
-          <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-200">
-            {JSON.stringify(gameState, null, 2)}
-          </pre>
-        </section>
       </div>
-    </div>
-  );
-}
-
-type StatCardProps = {
-  label: string;
-  value: string;
-  accent?: 'profit' | 'danger';
-};
-
-function StatCard({ label, value, accent }: StatCardProps) {
-  const valueClassName = accent === 'profit'
-    ? 'text-emerald-400'
-    : accent === 'danger'
-      ? 'text-rose-400'
-      : 'text-white';
-
-  return (
-    <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
-      <p className="mb-2 text-sm text-slate-400">{label}</p>
-      <p className={`text-2xl font-bold ${valueClassName}`}>{value}</p>
     </div>
   );
 }
@@ -120,8 +119,8 @@ type ActionButtonProps = {
 function ActionButton({ children, onClick, variant = 'primary' }: ActionButtonProps) {
   const className =
     variant === 'primary'
-      ? 'bg-emerald-500 text-slate-950 border-2 border-emerald-300 shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-300/40'
-      : 'bg-amber-400 text-slate-950 border-2 border-amber-200 shadow-lg shadow-amber-500/30 hover:bg-amber-300 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-200/40';
+      ? 'w-full bg-emerald-500 text-slate-950 border-2 border-emerald-300 shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-300/40'
+      : 'w-full bg-amber-400 text-slate-950 border-2 border-amber-200 shadow-lg shadow-amber-500/30 hover:bg-amber-300 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-200/40';
 
   return (
     <button
@@ -136,7 +135,7 @@ function ActionButton({ children, onClick, variant = 'primary' }: ActionButtonPr
 
 function BreakdownRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-slate-900 px-3 py-2">
+    <div className="flex items-center justify-between rounded-md bg-slate-800 px-3 py-2">
       <dt>{label}</dt>
       <dd className="font-semibold text-white">{value}</dd>
     </div>
