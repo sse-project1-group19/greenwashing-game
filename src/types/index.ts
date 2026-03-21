@@ -5,6 +5,7 @@ export interface Upgrade {
   cost: number,
   isGreenwashing?: boolean,
   moneyPerTick?: number,
+  pollutionPerTick?: number,
   negationPerTick?: number,
   realWorldLink?: {
     company: string,
@@ -14,30 +15,14 @@ export interface Upgrade {
 }
 export type GameStatus = 'not_started' | 'playing' | 'lost';
 
-export interface TickProfitBreakdown {
-  revenue: number;
-  operatingCost: number;
-  netProfit: number;
+interface GameState {
+  money: number,
+  ownedUpgrades: Upgrade[],
+  baseMoneyPerTick: number,
+  pollution: number,
+  turn: number,
+  perception: number,
+  gameState: 'not_started' | 'playing' | 'won' | 'lost'
 }
 
-export interface GameState {
-  gameStatus: GameStatus;
-  tick: number;
-  companyName: string;
-  money: number;
-  pollution: number;
-  publicPerception: number;
-  baseRevenuePerTick: number;
-  baseOperatingCostPerTick: number;
-  revenueMultiplier: number;
-  costMultiplier: number;
-  lastTickProfit: TickProfitBreakdown;
-}
-
-export interface GameStore {
-  gameState: GameState;
-  startNewGame: () => void;
-  resetGame: () => void;
-  setCompanyName: (companyName: string) => void;
-  advanceTick: () => void;
-}
+export type { Upgrade, GameState };

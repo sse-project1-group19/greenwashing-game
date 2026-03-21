@@ -1,19 +1,11 @@
 import type { GameState } from '../types/index';
 
 export const createInitialGameState = (): GameState => ({
-  gameStatus: 'not_started',
-  tick: 0,
-  companyName: 'Random Name',
   money: 0,
+  ownedUpgrades: [],
+  baseMoneyPerTick: 1,
   pollution: 0,
-  publicPerception: 100,
-  baseRevenuePerTick: 12,
-  baseOperatingCostPerTick: 4,
-  revenueMultiplier: 1,
-  costMultiplier: 1,
-  lastTickProfit: {
-    revenue: 0,
-    operatingCost: 0,
-    netProfit: 0,
-  },
+  turn: 0,
+  perception: 100,
+  gameState: 'not_started',
 });
