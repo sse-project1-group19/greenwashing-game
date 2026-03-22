@@ -20,9 +20,11 @@ interface GameState {
   ownedUpgrades: Upgrade[],
   baseMoneyPerTick: number,
   pollution: number,
-  turn: number,
-  perception: number,
-  gameState: 'not_started' | 'playing' | 'won' | 'lost'
+  tick: number;
+  perception: number;
+  gameState: GameStatus;
+  currentTickClicks: number;
+  totalClicks: number;
 }
 
 export type { Upgrade, GameState };

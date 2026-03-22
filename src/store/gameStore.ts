@@ -7,35 +7,29 @@ import type { GameState, Upgrade } from '../types/index';
 // ---------------------------------------------------------------------------
 
 export const calculateMoneyPerTick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, u) => sum + (u.moneyPerTick ?? 0), 0);
+  upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerTick ?? 0), 0);
 
 export const calculatePollutionPerTick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, u) => sum + (u.pollutionPerTick ?? 0), 0);
+  upgrades.reduce((sum, upgrade) => sum + (upgrade.pollutionPerTick ?? 0), 0);
 
 // ---------------------------------------------------------------------------
 // Store shape
 // ---------------------------------------------------------------------------
 
-interface GameStore {
-  gameState: GameState;
-
-  // Lifecycle
-  startNewGame: () => void;
-  resetGame: () => void;
-
-  // Per-tick mutations (called by gameEngine)
-  tick: () => void;
-  addMoney: (amount: number) => void;
-  addPollution: (amount: number) => void;
-  addPerception: (amount: number) => void;
-
-  // Player actions
-  buyUpgrade: (upgrade: Upgrade) => void;
+interface ProcessTickPayload {
+  passiveMoney: number;
+  pollutionDelta: number;
 }
 
-// ---------------------------------------------------------------------------
-// Store
-// ---------------------------------------------------------------------------
+interface GameStore {
+  gameState: GameState;
+  startNewGame: () => void;
+  resetGame: () => void;
+  registerClick: () => void;
+  processTick: (payload: ProcessTickPayload) => void;
+  addPerception: (amount: number) => void;
+  buyUpgrade: (upgrade: Upgrade) => void;
+}
 
 export const useGameStore = create<GameStore>((set) => ({
   gameState: createInitialGameState(),
@@ -48,25 +42,40 @@ export const useGameStore = create<GameStore>((set) => ({
     set({ gameState: createInitialGameState() });
   },
 
-  tick: () => {
-    set((state) => ({
-      gameState: { ...state.gameState, turn: state.gameState.turn + 1 },
-    }));
+  registerClick: () => {
+    set((state) => {
+      if (state.gameState.gameState !== 'playing') {
+        return state;
+      }
+
+      return {
+        gameState: {
+          ...state.gameState,
+          currentTickClicks: state.gameState.currentTickClicks + 1,
+          totalClicks: state.gameState.totalClicks + 1,
+        },
+      };
+    });
   },
 
-  addMoney: (amount: number) => {
-    set((state) => ({
-      gameState: { ...state.gameState, money: state.gameState.money + amount },
-    }));
-  },
+  processTick: ({ passiveMoney, pollutionDelta }) => {
+    set((state) => {
+      if (state.gameState.gameState !== 'playing') {
+        return state;
+      }
 
-  addPollution: (amount: number) => {
-    set((state) => ({
-      gameState: {
-        ...state.gameState,
-        pollution: state.gameState.pollution + amount,
-      },
-    }));
+      const clickMoney = state.gameState.currentTickClicks;
+
+      return {
+        gameState: {
+          ...state.gameState,
+          tick: state.gameState.tick + 1,
+          money: state.gameState.money + passiveMoney + clickMoney,
+          pollution: state.gameState.pollution + pollutionDelta,
+          currentTickClicks: 0,
+        },
+      };
+    });
   },
 
   addPerception: (amount: number) => {
@@ -80,7 +89,10 @@ export const useGameStore = create<GameStore>((set) => ({
 
   buyUpgrade: (upgrade: Upgrade) => {
     set((state) => {
-      if (state.gameState.money < upgrade.cost) return state;
+      if (state.gameState.money < upgrade.cost) {
+        return state;
+      }
+
       return {
         gameState: {
           ...state.gameState,
