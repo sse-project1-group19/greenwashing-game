@@ -9,8 +9,14 @@ import type { GameState, Upgrade } from '../types/index';
 export const calculateMoneyPerTick = (upgrades: Upgrade[]): number =>
   upgrades.reduce((sum, u) => sum + (u.moneyPerTick ?? 0), 0);
 
+export const calculateMoneyPerClick = (upgrades: Upgrade[]): number =>
+  upgrades.reduce((sum, u) => sum + (u.moneyPerClick ?? 0), 0);
+
 export const calculatePollutionPerTick = (upgrades: Upgrade[]): number =>
   upgrades.reduce((sum, u) => sum + (u.pollutionPerTick ?? 0), 0);
+
+export const calculatePerceptionPerTick = (upgrades: Upgrade[]): number =>
+  upgrades.reduce((sum, u) => sum + (u.perceptionPerTick ?? 0), 0);
 
 // ---------------------------------------------------------------------------
 // Store shape
@@ -85,6 +91,7 @@ export const useGameStore = create<GameStore>((set) => ({
         gameState: {
           ...state.gameState,
           money: state.gameState.money - upgrade.cost,
+          perception: state.gameState.perception + (upgrade.perceptionImpact ?? 0),
           ownedUpgrades: [...state.gameState.ownedUpgrades, upgrade],
         },
       };
