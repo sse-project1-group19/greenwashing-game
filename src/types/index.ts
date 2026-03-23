@@ -1,4 +1,4 @@
-export interface Upgrade {
+interface Upgrade {
   id: number,
   name: string,
   description: string,
