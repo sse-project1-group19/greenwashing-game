@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGameStore, calculateMoneyPerTick, calculatePollutionPerTick, calculatePerceptionPerTick } from "../store/gameStore";
+import { useGameStore, calculateMoneyPerTick, calculatePollutionPerTick } from "../store/gameStore";
 
 /**
  * Game Engine Hook
@@ -17,12 +17,10 @@ export function useGameEngine() {
 
     const moneyPerTick = gamestate.baseMoneyPerTick + calculateMoneyPerTick(gamestate.ownedUpgrades);
     const pollutionPerTick = calculatePollutionPerTick(gamestate.ownedUpgrades);
-    const perceptionPerTick = calculatePerceptionPerTick(gamestate.ownedUpgrades);
 
     tick();
     addMoney(moneyPerTick);
     addPollution(pollutionPerTick);
-    addPerception(perceptionPerTick);
   };
 
   useEffect(() => {

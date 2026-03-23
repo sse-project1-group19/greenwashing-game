@@ -15,8 +15,6 @@ export const calculateMoneyPerClick = (upgrades: Upgrade[]): number =>
 export const calculatePollutionPerTick = (upgrades: Upgrade[]): number =>
   upgrades.reduce((sum, u) => sum + (u.pollutionPerTick ?? 0), 0);
 
-export const calculatePerceptionPerTick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, u) => sum + (u.perceptionPerTick ?? 0), 0);
 
 // ---------------------------------------------------------------------------
 // Store shape
@@ -76,22 +74,28 @@ export const useGameStore = create<GameStore>((set) => ({
   },
 
   addPerception: (amount: number) => {
-    set((state) => ({
-      gameState: {
-        ...state.gameState,
-        perception: state.gameState.perception + amount,
-      },
-    }));
+    set((state) => {
+      const newPerception = state.gameState.perception + amount;
+      return {
+        gameState: {
+          ...state.gameState,
+          perception: newPerception,
+          gameState: newPerception <= 0 && state.gameState.gameState === 'playing' ? 'lost' : state.gameState.gameState,
+        },
+      };
+    });
   },
 
   buyUpgrade: (upgrade: Upgrade) => {
     set((state) => {
       if (state.gameState.money < upgrade.cost) return state;
+      const newPerception = state.gameState.perception + (upgrade.perceptionImpact ?? 0);
       return {
         gameState: {
           ...state.gameState,
           money: state.gameState.money - upgrade.cost,
-          perception: state.gameState.perception + (upgrade.perceptionImpact ?? 0),
+          perception: newPerception,
+          gameState: newPerception <= 0 && state.gameState.gameState === 'playing' ? 'lost' : state.gameState.gameState,
           ownedUpgrades: [...state.gameState.ownedUpgrades, upgrade],
         },
       };

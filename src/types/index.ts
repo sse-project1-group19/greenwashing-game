@@ -8,10 +8,11 @@ interface Upgrade {
   moneyPerClick?: number,
   pollutionPerTick?: number,
   perceptionImpact?: number,
-  perceptionPerTick?: number,
+  category?: 'production' | 'perception',
   educationalMessage?: string,
   realWorldEvidence?: string,
   source?: string,
+  sourceUrl?: string,
   negationPerTick?: number,
   realWorldLink?: {
     company: string,
