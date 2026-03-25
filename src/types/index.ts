@@ -1,11 +1,18 @@
-export interface Upgrade {
+interface Upgrade {
   id: number,
   name: string,
   description: string,
   cost: number,
   isGreenwashing?: boolean,
   moneyPerTick?: number,
+  moneyPerClick?: number,
   pollutionPerTick?: number,
+  perceptionImpact?: number,
+  category?: 'production' | 'perception',
+  educationalMessage?: string,
+  realWorldEvidence?: string,
+  source?: string,
+  sourceUrl?: string,
   negationPerTick?: number,
   realWorldLink?: {
     company: string,
