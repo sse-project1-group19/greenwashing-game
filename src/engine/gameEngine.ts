@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useGameStore, calculateMoneyPerTick, calculatePollutionPerTick } from "../store/gameStore";
 
 /**
@@ -10,9 +10,8 @@ export function useGameEngine() {
   const tick = useGameStore((state) => state.tick);
   const addMoney = useGameStore((state) => state.addMoney);
   const addPollution = useGameStore((state) => state.addPollution);
-  const addPerception = useGameStore((state) => state.addPerception);
 
-  const processTurn = () => {
+  const processTurn = useCallback(() => {
     if (gamestate.gameState !== 'playing') return;
 
     const moneyPerTick = gamestate.baseMoneyPerTick + calculateMoneyPerTick(gamestate.ownedUpgrades);
@@ -21,7 +20,7 @@ export function useGameEngine() {
     tick();
     addMoney(moneyPerTick);
     addPollution(pollutionPerTick);
-  };
+  }, [gamestate, tick, addMoney, addPollution]);
 
   useEffect(() => {
     if (gamestate.gameState !== 'playing') return;
@@ -29,7 +28,7 @@ export function useGameEngine() {
     const interval = setInterval(processTurn, 1000);
 
     return () => clearInterval(interval);
-  }, [gamestate.gameState, gamestate.ownedUpgrades, gamestate.baseMoneyPerTick, tick, addMoney, addPollution, addPerception]);
+  }, [gamestate.gameState, processTurn]);
 
   return { processTurn };
 }

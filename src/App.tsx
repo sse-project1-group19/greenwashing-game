@@ -1,169 +1,11 @@
-// import { useState, useEffect } from 'react';
-// import { useGameStore } from './store/gameStore';
-// import { useGameEngine } from './engines/gameEngine';
-
-// function App() {
-//   const gameState = useGameStore((state) => state.gameState);
-//   const startNewGame = useGameStore((state) => state.startNewGame);
-//   const [screen, setScreen] = useState<'start' | 'game' | 'end'>('start');
-
-//   // Load saved game on mount
-//   useEffect(() => {
-//     const saved = localStorage.getItem('offsetTruth_save_1');
-//     if (saved) {
-//       try {
-//         const parsed = JSON.parse(saved);
-//         useGameStore.setState({ gameState: parsed });
-//         setScreen('game');
-//       } catch (e) {
-//         console.error('Failed to load save:', e);
-//         setScreen('start');
-//       }
-//     }
-//   }, []);
-
-//   // Start game engine when game screen is active
-//   const GameScreenWrapper = () => {
-//     useGameEngine();
-//     return <GameScreen />;
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-dark flex flex-col">
-//       {screen === 'start' && <StartScreen onStart={() => {
-//         startNewGame();
-//         setScreen('game');
-//       }} />}
-
-//       {screen === 'game' && gameState.gameStatus === 'playing' && <GameScreenWrapper />}
-
-//       {screen === 'game' && gameState.gameStatus !== 'playing' && (
-//         <EndScreen status={gameState.gameStatus} onRestart={() => {
-//           startNewGame();
-//           setScreen('game');
-//         }} />
-//       )}
-//     </div>
-//   );
-// }
-
-// function StartScreen({ onStart }: { onStart: () => void }) {
-//   return (
-//     <div className="flex-1 flex flex-col items-center justify-center p-4">
-//       <div className="text-center max-w-2xl">
-//         <h1 className="text-5xl font-bold mb-4 text-gradient-amber">
-//           Offset the Truth
-//         </h1>
-//         <p className="text-xl text-slate-400 mb-8">
-//           Become the CEO of the world's most profitable corporation. Hide your environmental crimes. Manage public perception. Win at any cost.
-//         </p>
-//         <button
-//           onClick={onStart}
-//           className="px-8 py-3 bg-rose-500 hover:bg-rose-600 rounded-lg font-bold text-lg transition-colors"
-//         >
-//           Start Game
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function GameScreen() {
-//   const gameState = useGameStore((state) => state.gameState);
-//   const formatMoney = (n: number) => `$${(n / 1000).toFixed(1)}K`;
-
-//   return (
-//     <div className="flex-1 flex flex-col p-4 gap-4">
-//       {/* Stats Bar */}
-//       <div className="grid grid-cols-3 gap-4 bg-slate-800 p-4 rounded-lg">
-//         <div className="text-center">
-//           <div className="text-2xl font-bold text-emerald-400">{formatMoney(gameState.money)}</div>
-//           <div className="text-sm text-slate-400">Money</div>
-//         </div>
-//         <div className="text-center">
-//           <div className="text-2xl font-bold text-amber-400">{gameState.publicPerception}%</div>
-//           <div className="text-sm text-slate-400">Public Perception</div>
-//         </div>
-//         <div className="text-center">
-//           <div className="text-2xl font-bold text-rose-400">{gameState.legalRisk}%</div>
-//           <div className="text-sm text-slate-400">Legal Risk</div>
-//         </div>
-//       </div>
-
-//       {/* Upgrades Grid - Placeholder */}
-//       <div className="flex-1 bg-slate-800 p-4 rounded-lg">
-//         <h2 className="text-xl font-bold mb-4">Upgrades (Coming Soon)</h2>
-//         <p className="text-slate-400">Build upgrade cards here</p>
-//       </div>
-
-//       {/* Game Log - Placeholder */}
-//       <div className="bg-slate-800 p-4 rounded-lg h-32">
-//         <h2 className="text-xl font-bold mb-2">Log</h2>
-//         <p className="text-slate-400">Turn {gameState.turn}</p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function EndScreen({ status, onRestart }: { status: string; onRestart: () => void }) {
-//   return (
-//     <div className="flex-1 flex flex-col items-center justify-center p-4">
-//       <div className="text-center max-w-2xl">
-//         <h1 className="text-4xl font-bold mb-4">
-//           {status === 'won' ? '🎉 You Won!' : '💀 Game Over'}
-//         </h1>
-//         <p className="text-xl text-slate-400 mb-8">
-//           {status === 'won'
-//             ? 'You successfully built a global empire while hiding your environmental crimes!'
-//             : 'Your company collapsed under the weight of scandal and public backlash.'}
-//         </p>
-//         <button
-//           onClick={onRestart}
-//           className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-bold text-lg transition-colors"
-//         >
-//           Play Again
-//         </button>
-//       </div>
-import { useGameStore, calculateMoneyPerTick, calculatePollutionPerTick } from './store/gameStore';
+import { useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { useGameEngine } from './engine/gameEngine';
 import { UPGRADES } from './data/upgrades';
-import { useState } from 'react';
-import type { Upgrade } from './types/index';
+import { calculateMoneyPerTick, calculatePollutionPerTick, useGameStore } from './store/gameStore';
+import type { Upgrade } from './types';
 
 const formatMoney = (value: number): string => `$${value.toFixed(2)}`;
-
-const boughtUpgradesPlaceholder = [
-  { id: 1, name: 'Carbon Capture Campaign', timesBought: 2 },
-  { id: 2, name: 'Sustainability Slogan Booster', timesBought: 4 },
-  { id: 3, name: 'Eco-Friendly Logo Refresh', timesBought: 1 },
-];
-
-const availableUpgradesPlaceholder = [
-  {
-    id: 1,
-    name: 'Greenwashing Social Ads',
-    price: 125,
-    revenuePerTick: 7,
-    operatingCostPerTick: 2,
-    environmentalDamagePerTick: 1,
-  },
-  {
-    id: 2,
-    name: 'Factory Throughput Optimizer',
-    price: 320,
-    revenuePerTick: 16,
-    operatingCostPerTick: 7,
-    environmentalDamagePerTick: 4,
-  },
-  {
-    id: 3,
-    name: 'Transparency Report Team',
-    price: 540,
-    revenuePerTick: 21,
-    operatingCostPerTick: 10,
-    environmentalDamagePerTick: undefined,
-  },
-];
 
 function App() {
   const { processTurn } = useGameEngine();
@@ -175,49 +17,50 @@ function App() {
   const resetGame = useGameStore((state) => state.resetGame);
   const buyUpgrade = useGameStore((state) => state.buyUpgrade);
 
-  const handleBuy = (u: Upgrade) => {
-    buyUpgrade(u);
-    setActiveNotification(u);
+  const handleBuy = (upgrade: Upgrade) => {
+    buyUpgrade(upgrade);
+    setActiveNotification(upgrade);
   };
 
-  const renderUpgradeCard = (u: Upgrade) => {
-    const isOwned = gameState.ownedUpgrades.some((owned) => owned.id === u.id);
-    const canAfford = gameState.money >= u.cost;
+  const renderUpgradeCard = (upgrade: Upgrade) => {
+    const isOwned = gameState.ownedUpgrades.some((owned) => owned.id === upgrade.id);
+    const canAfford = gameState.money >= upgrade.cost;
+
     return (
-      <div key={u.id} className="flex flex-col justify-between rounded-lg border border-slate-700 bg-slate-900 p-4 shadow-lg">
+      <div key={upgrade.id} className="flex flex-col justify-between rounded-lg border border-slate-700 bg-slate-900 p-4 shadow-lg">
         <div>
-          <h3 className="font-bold text-lg mb-1">{u.name}</h3>
-          <p className="mb-3 text-sm text-slate-400">{u.description}</p>
+          <h3 className="mb-1 text-lg font-bold">{upgrade.name}</h3>
+          <p className="mb-3 text-sm text-slate-400">{upgrade.description}</p>
         </div>
         <div>
           <div className="mb-4 space-y-1 text-sm font-medium">
             <p className="flex justify-between border-b border-slate-800 pb-1">
               <span className="text-slate-400">Price</span>
-              <span className={canAfford && !isOwned ? 'text-white' : 'text-slate-500'}>${u.cost}</span>
+              <span className={canAfford && !isOwned ? 'text-white' : 'text-slate-500'}>${upgrade.cost}</span>
             </p>
-            {u.moneyPerTick ? (
+            {upgrade.moneyPerTick ? (
               <p className="flex justify-between border-b border-slate-800 pb-1 pt-1">
                 <span className="text-slate-400">Money</span>
-                <span className="text-emerald-400">+${u.moneyPerTick}/tick</span>
+                <span className="text-emerald-400">+${upgrade.moneyPerTick}/tick</span>
               </p>
             ) : null}
-            {u.perceptionImpact ? (
+            {upgrade.perceptionImpact ? (
               <p className="flex justify-between pt-1">
                 <span className="text-slate-400">Perception</span>
-                <span className="text-amber-400">+{u.perceptionImpact}% instantly</span>
+                <span className="text-amber-400">+{upgrade.perceptionImpact}% instantly</span>
               </p>
             ) : null}
           </div>
           <button
             type="button"
             disabled={isOwned || !canAfford}
-            onClick={() => handleBuy(u)}
+            onClick={() => handleBuy(upgrade)}
             className={`w-full rounded px-4 py-3 text-sm font-bold transition-all ${
               isOwned
-                ? 'bg-emerald-900/30 text-emerald-500 ring-1 ring-inset ring-emerald-500/20 cursor-default'
+                ? 'cursor-default bg-emerald-900/30 text-emerald-500 ring-1 ring-inset ring-emerald-500/20'
                 : canAfford
-                ? 'bg-emerald-500 hover:bg-emerald-400 hover:scale-[1.02] hover:shadow-lg text-slate-950 shadow-emerald-500/30'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                  ? 'bg-emerald-500 text-slate-950 shadow-emerald-500/30 hover:scale-[1.02] hover:bg-emerald-400 hover:shadow-lg'
+                  : 'cursor-not-allowed bg-slate-800 text-slate-500'
             }`}
           >
             {isOwned ? 'Acquired' : 'Launch Initiative'}
@@ -232,13 +75,16 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <div className="mx-auto max-w-7xl p-6">
-        <header className="mb-6 rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-dark">
+      <div className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 p-6">
+        <header className="rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-dark">
           <p className="mb-2 text-sm uppercase tracking-[0.2em] text-slate-400">Carbon Clicker</p>
           <h1 className="mb-3 text-4xl font-bold text-gradient-amber">Game State Debug</h1>
           <p className="max-w-3xl text-slate-300">
             Debug view for the new game state model. Upgrades drive money and pollution per tick via the game engine.
           </p>
+          <Link className="mt-4 inline-block text-sm font-semibold text-amber-400 underline" to="/">
+            Go to Game Page
+          </Link>
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
@@ -271,57 +117,68 @@ function App() {
               <p className="text-sm text-slate-400">No upgrades purchased yet.</p>
             ) : (
               <ul className="space-y-2 text-sm text-slate-300">
-                {gameState.ownedUpgrades.map((u) => (
-                  <li key={u.id} className="flex justify-between rounded-lg bg-slate-900 px-3 py-2">
-                    <span>{u.name}</span>
-                    <span className="text-emerald-400">+${u.moneyPerTick ?? 0}/tick</span>
+                {gameState.ownedUpgrades.map((upgrade) => (
+                  <li key={upgrade.id} className="flex justify-between rounded-lg bg-slate-900 px-3 py-2">
+                    <span>{upgrade.name}</span>
+                    <span className="text-emerald-400">+${upgrade.moneyPerTick ?? 0}/tick</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
         </section>
+
+        <section className="rounded-xl border border-slate-700 bg-slate-800 p-6">
+          <h2 className="mb-4 text-xl font-semibold">Current state snapshot</h2>
+          <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-200">
+            {JSON.stringify(gameState, null, 2)}
+          </pre>
+        </section>
       </div>
 
-      {/* Upgrades Modal */}
       {isUpgradesModalOpen && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-40 flex animate-fadeIn items-center justify-center bg-slate-950/80 p-4">
           <div className="max-h-[85vh] w-full max-w-5xl overflow-y-auto rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-2xl">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-3xl font-bold text-gradient-amber">Corporate Initiatives (Upgrades)</h2>
-              <button onClick={() => setIsUpgradesModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">✕ Close</button>
+              <button
+                onClick={() => setIsUpgradesModalOpen(false)}
+                className="transition-colors hover:text-white text-slate-400"
+              >
+                X Close
+              </button>
             </div>
-            
+
             <div className="flex flex-col gap-8 md:flex-row">
-              {/* Production Column */}
               <div className="flex-1">
-                <h3 className="mb-4 text-xl font-semibold text-emerald-400 border-b border-emerald-900/50 pb-2">Revenue Initiatives (Production)</h3>
+                <h3 className="mb-4 border-b border-emerald-900/50 pb-2 text-xl font-semibold text-emerald-400">
+                  Revenue Initiatives (Production)
+                </h3>
                 <div className="grid gap-4 xl:grid-cols-2">
-                  {UPGRADES.filter(u => u.category === 'production').map(renderUpgradeCard)}
+                  {UPGRADES.filter((upgrade) => upgrade.category === 'production').map(renderUpgradeCard)}
                 </div>
               </div>
 
-              {/* Perception Column */}
               <div className="flex-1">
-                <h3 className="mb-4 text-xl font-semibold text-amber-400 border-b border-amber-900/50 pb-2">Damage Control (PR)</h3>
+                <h3 className="mb-4 border-b border-amber-900/50 pb-2 text-xl font-semibold text-amber-400">
+                  Damage Control (PR)
+                </h3>
                 <div className="grid gap-4 xl:grid-cols-2">
-                  {UPGRADES.filter(u => u.category === 'perception').map(renderUpgradeCard)}
+                  {UPGRADES.filter((upgrade) => upgrade.category === 'perception').map(renderUpgradeCard)}
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       )}
 
-      {/* Educational Popup Alert */}
       {activeNotification && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex animate-fadeIn items-center justify-center bg-slate-950/80 p-4">
           <div className="w-full max-w-lg rounded-xl border border-rose-500/30 bg-slate-800 p-6 shadow-[0_0_50px_-10px_rgba(244,63,94,0.3)]">
             <h2 className="mb-5 flex items-center gap-2 text-2xl font-bold text-rose-400">
-              <span className="text-3xl">⚠️</span> Greenwashing Alert!
+              <span className="text-3xl">!</span> Greenwashing Alert
             </h2>
-            <p className="mb-6 text-lg tracking-wide text-white leading-relaxed">
+            <p className="mb-6 text-lg leading-relaxed tracking-wide text-white">
               {activeNotification.educationalMessage}
             </p>
             <div className="mb-8 rounded-lg border border-slate-700 bg-slate-900 p-4 text-sm shadow-inner">
@@ -329,16 +186,21 @@ function App() {
                 <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500">Real-World Case</span>
                 {activeNotification.realWorldEvidence}
               </p>
-              <p className="text-xs text-slate-500 italic">
-                Source: {' '}
-                <a href={activeNotification.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300">
+              <p className="text-xs italic text-slate-500">
+                Source:{' '}
+                <a
+                  href={activeNotification.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 underline hover:text-blue-300"
+                >
                   {activeNotification.source}
                 </a>
               </p>
             </div>
             <button
               onClick={() => setActiveNotification(null)}
-              className="w-full rounded-xl bg-slate-700 py-3 font-bold text-white hover:bg-slate-600 transition-colors focus:ring-4 focus:ring-slate-500/50"
+              className="w-full rounded-xl bg-slate-700 py-3 font-bold text-white transition-colors hover:bg-slate-600 focus:ring-4 focus:ring-slate-500/50"
             >
               Continue Playing
             </button>
@@ -349,8 +211,26 @@ function App() {
   );
 }
 
+type StatCardProps = {
+  label: string;
+  value: string;
+  accent?: 'profit' | 'danger';
+};
+
+function StatCard({ label, value, accent }: StatCardProps) {
+  const valueClassName =
+    accent === 'profit' ? 'text-emerald-400' : accent === 'danger' ? 'text-rose-400' : 'text-white';
+
+  return (
+    <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+      <p className="mb-2 text-sm text-slate-400">{label}</p>
+      <p className={`text-2xl font-bold ${valueClassName}`}>{value}</p>
+    </div>
+  );
+}
+
 type ActionButtonProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   onClick: () => void;
   variant?: 'primary' | 'secondary';
 };
@@ -358,8 +238,8 @@ type ActionButtonProps = {
 function ActionButton({ children, onClick, variant = 'primary' }: ActionButtonProps) {
   const className =
     variant === 'primary'
-      ? 'w-full bg-emerald-500 text-slate-950 border-2 border-emerald-300 shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-300/40'
-      : 'w-full bg-amber-400 text-slate-950 border-2 border-amber-200 shadow-lg shadow-amber-500/30 hover:bg-amber-300 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-200/40';
+      ? 'border-2 border-emerald-300 bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 hover:scale-[1.02] hover:bg-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-300/40'
+      : 'border-2 border-amber-200 bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/30 hover:scale-[1.02] hover:bg-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-200/40';
 
   return (
     <button
@@ -373,3 +253,4 @@ function ActionButton({ children, onClick, variant = 'primary' }: ActionButtonPr
 }
 
 export default App;
+
