@@ -6,19 +6,55 @@ export const UPGRADES: Upgrade[] = [
   // -------------------------------------------------------------
   {
     id: 1,
-    name: "AI Datacenter Expansion",
-    description: "Build massive server farms for AI while buying cheap renewable certificates to claim 'clean energy'.",
+    name: "Upgrade your GPU",
+    description: "Buy the newest consumer graphics card to boost your training rate and improve your model",
     category: "production",
     cost: 500,
     moneyPerTick: 25,
-    pollutionPerTick: 15,
-    educationalMessage: "Tech giants claim their AI queries are powered by 100% renewable energy by purchasing Unbundled Renewable Energy Certificates (RECs), even while their actual local servers demand massive amounts of regional fossil fuels.",
-    realWorldEvidence: "Google's emissions have surged 48% since 2019, driven directly by the massive electricity and cooling demands of AI data center expansion.",
-    source: "The Guardian",
-    sourceUrl: "https://www.theguardian.com/technology/article/2024/jul/02/google-ai-emissions"
+    pollutionPerTick: 15
   },
   {
     id: 2,
+    name: "A New PC",
+    description: "Buy a brand new top-of-the-range PC to further increase your training rate and improve your model",
+    category: "production",
+    cost: 3000,
+    moneyPerTick: 150,
+    pollutionPerTick: 85,
+  },
+  {
+    id: 3,
+    name: "Local Server Rack",
+    description: "A new rack of local servers to further increase your training capability.",
+    category: "production",
+    cost: 6500,
+    moneyPerTick: 350,
+    pollutionPerTick: 175
+  },
+  {
+    id: 4,
+    name: "Build a New Datacentre",
+    description: "The pinnacle in AI hardware, a brand new server farm to host your models for the masses",
+    category: "production",
+    cost: 12000,
+    moneyPerTick: 600,
+    pollutionPerTick: 500,
+  },
+  {
+    id: 5,
+    name: "Add Image Generation Functionality",
+    description: "Expand your AI service by introducing an image generation model",
+    category: "production",
+    cost: 15000,
+    moneyPerTick: 1000,
+    pollutionPerTick: 750
+  },
+
+  // -------------------------------------------------------------
+  // PERCEPTION UPGRADES (Bad)
+  // -------------------------------------------------------------
+ {
+    id: 6,
     name: "Unsubstantiated AI Climate Claims",
     description: "Market the green benefits of your AI products without any real evidence or lifecycle analysis to back it up.",
     category: "production",
@@ -29,61 +65,6 @@ export const UPGRADES: Upgrade[] = [
     realWorldEvidence: "Only 26% of AI CLimate claims cite reseach and 36% provide no evidence at all, according to Climate non-profit Beyong Fossil Fuels.",
     source: "Euronews",
     sourceUrl: "https://www.euronews.com/next/2026/02/17/ai-greenwashing-most-of-big-techs-ai-climate-promises-fall-flat-study-finds"
-  },
-  {
-    id: 3,
-    name: "Right to Repair Obstruction",
-    description: "Use 'part-pairing' software to block independent repair, forcing consumers to buy new devices.",
-    category: "production",
-    cost: 3000,
-    moneyPerTick: 150,
-    pollutionPerTick: 85,
-    educationalMessage: "While heavily marketing their 'recycling robots', tech companies lock down their hardware via proprietary screws and software 'serialization' so consumers can't fix their own screens or batteries, generating massive e-waste and forcing new sales.",
-    realWorldEvidence: "Apple and John Deere have historically heavily lobbied against 'Right to Repair' laws while pushing PR campaigns about their internal recycling efforts.",
-    source: "Medium",
-    sourceUrl: "https://doctorow.medium.com/apple-fucked-us-on-right-to-repair-again-df4b35030480"
-  },
-  {
-    id: 4,
-    name: "Proof-of-Work Crypto Mining",
-    description: "Run massive crypto mining rigs while claiming to “balance the renewable energy grid”.",
-    category: "production",
-    cost: 6500,
-    moneyPerTick: 350,
-    pollutionPerTick: 220,
-    educationalMessage: "Crypto prospectors claim their multi-megawatt mining rigs 'soak up excess solar/wind energy', but in reality they just increase baseline grid load, forcing municipal grids to burn more coal and natural gas to keep local lights on.",
-    realWorldEvidence: "Bitcoin mining consumes as much electricity annually as entire small countries, largely utilizing cheap fossil fuels.",
-    source: "Forbes",
-    sourceUrl: "https://www.theverge.com/2021/3/15/22328203/nft-cryptoart-ethereum-blockchain-climate-change"
-  },
-  {
-    id: 5,
-    name: "Planned Firmware Obsolescence",
-    description: "Push software updates that secretly throttle battery life to force user hardware upgrades.",
-    category: "production",
-    cost: 12000,
-    moneyPerTick: 600,
-    pollutionPerTick: 500,
-    educationalMessage: "Companies release PR statements about building 'durable' tech to keep devices out of landfills, while simultaneously pushing mandatory OS updates that intentionally slow down older models' processors to frustrate users into upgrading.",
-    realWorldEvidence: "Apple paid $500 million to settle the 'Batterygate' lawsuit for secretly throttling older iPhones, a practice deeply contradicting their green marketing.",
-    source: "Earth.org",
-    sourceUrl: "https://www.reuters.com/article/us-apple-iphones-settlement/apple-agrees-to-pay-up-to-500-million-to-settle-u-s-lawsuit-over-slow-iphones-idUSKBN20P2E7"
-  },
-
-  // -------------------------------------------------------------
-  // PUBLIC RELATIONS (Perception Improvements)
-  // -------------------------------------------------------------
-  {
-    id: 6,
-    name: "Scrap Net Zero Timelines",
-    description: "Quietly abandon public 'Net Zero' targets while pivoting PR strategy to 'AI Innovation'.",
-    category: "perception",
-    cost: 1000,
-    perceptionImpact: 5,
-    educationalMessage: "Tech companies make huge, public 'Net Zero' promises to get good PR today. When the time comes to actually cut emissions—or when a highly polluting tech like AI becomes profitable—they quietly scrap the timeline and scrub it from their site.",
-    realWorldEvidence: "Microsoft recently admitted their carbon negative by 2030 target was 'further out of reach' due to massive AI investments, while Google dropped 'operational carbon neutrality' entirely in 2024.",
-    source: "Forbes",
-    sourceUrl: "https://www.forbes.com/sites/jemmagreen/2024/08/29/why-big-corporations-are-quietly-abandoning-their-climate-commitments/"
   },
   {
     id: 7,
@@ -109,28 +90,12 @@ export const UPGRADES: Upgrade[] = [
     source: "Google's 2025 Sustainablity report",
     sourceUrl: "https://sustainability.google/stories/how-google-earth-pro-helps-clean-energy-development/"
   },
-  {
-    id: 9,
-    name: "E-Waste “Recycling” Exportation",
-    description: "Put collection bins in your retail stores, then quietly ship the e-waste to developing nations.",
-    category: "perception",
-    cost: 12000,
-    perceptionImpact: 20,
-    educationalMessage: "Hardware giants set up highly visible 'Trade-in and Recycle' programs in their sleek stores. Instead of safely recycling lithium and rare earth metals locally, they often sell the electronics to brokers who dump the toxic waste into foreign landfills.",
-    realWorldEvidence: "Investigations have repeatedly caught major tech firms and certified 'recyclers' exporting hazardous e-waste to countries without toxic processing regulations.",
-    source: "Renewable Matter",
-    sourceUrl: "https://www.renewablematter.eu/en/europe-doesnt-recycle-its-ewaste-it-exports-the-problem"
-  },
-  {
-    id: 10,
-    name: "Fund Anti-Climate Tech PACs",
-    description: "Tweet in support of the Paris Agreement while secretly funneling millions to anti-climate politicians.",
-    category: "perception",
-    cost: 30000,
-    perceptionImpact: 50,
-    educationalMessage: "Silicon Valley billionaires and CEOs sign open letters supporting progressive climate legislation to appease tech workers, while their corporate Political Action Committees (PACs) quietly bankroll the exact representatives trying to dismantle the EPA.",
-    realWorldEvidence: "Analysis routinely shows Alphabet, Meta, and Amazon publicly advocating for climate action while being top contributors to congressional committees that block climate bills.",
-    source: "Technology Magazine",
-    sourceUrl: "https://www.theguardian.com/environment/2019/oct/11/google-contributions-climate-change-deniers"
-  }
+  
+
+  
+  // -------------------------------------------------------------
+  // PERCEPTION UPGRADES (Good)
+  // -------------------------------------------------------------
+
+  // TODO: Add good upgrades here linked to SSE course material
 ];
