@@ -11,7 +11,6 @@ const formatMoney = (value: number): string => {
 };
 
 function App() {
-  const { processTurn } = useGameEngine();
   const [activeNotification, setActiveNotification] = useState<Upgrade | null>(null);
   const [isUpgradesDropdownOpen, setIsUpgradesDropdownOpen] = useState(false);
   const [clickAnim, setClickAnim] = useState(false);
@@ -20,6 +19,8 @@ function App() {
   const startNewGame = useGameStore((state) => state.startNewGame);
   const resetGame = useGameStore((state) => state.resetGame);
   const buyUpgrade = useGameStore((state) => state.buyUpgrade);
+
+  const { processTurn } = useGameEngine(gameState);
 
   const moneyPerTick = gameState.baseMoneyPerTick + calculateMoneyPerTick(gameState.ownedUpgrades);
   const pollutionPerTick = calculatePollutionPerTick(gameState.ownedUpgrades);
@@ -142,13 +143,12 @@ function App() {
                         key={u.id}
                         disabled={isOwned || !canAfford}
                         onClick={() => { handleBuy(u); setIsUpgradesDropdownOpen(false); }}
-                        className={`w-full text-left px-3 py-2.5 rounded mb-1 text-xs transition-all flex justify-between items-center gap-2 ${
-                          isOwned
-                            ? 'text-[var(--accent-green)] opacity-50 cursor-default bg-[rgba(0,229,160,0.05)]'
-                            : canAfford
+                        className={`w-full text-left px-3 py-2.5 rounded mb-1 text-xs transition-all flex justify-between items-center gap-2 ${isOwned
+                          ? 'text-[var(--accent-green)] opacity-50 cursor-default bg-[rgba(0,229,160,0.05)]'
+                          : canAfford
                             ? 'text-[var(--text-primary)] hover:bg-[rgba(0,229,160,0.1)] cursor-pointer'
                             : 'text-[var(--text-muted)] cursor-not-allowed'
-                        }`}
+                          }`}
                       >
                         <div className="min-w-0">
                           <p className="font-bold truncate">{u.name}</p>
@@ -173,13 +173,12 @@ function App() {
                         key={u.id}
                         disabled={isOwned || !canAfford}
                         onClick={() => { handleBuy(u); setIsUpgradesDropdownOpen(false); }}
-                        className={`w-full text-left px-3 py-2.5 rounded mb-1 text-xs transition-all flex justify-between items-center gap-2 ${
-                          isOwned
-                            ? 'text-[var(--accent-amber)] opacity-50 cursor-default bg-[rgba(240,180,41,0.05)]'
-                            : canAfford
+                        className={`w-full text-left px-3 py-2.5 rounded mb-1 text-xs transition-all flex justify-between items-center gap-2 ${isOwned
+                          ? 'text-[var(--accent-amber)] opacity-50 cursor-default bg-[rgba(240,180,41,0.05)]'
+                          : canAfford
                             ? 'text-[var(--text-primary)] hover:bg-[rgba(240,180,41,0.1)] cursor-pointer'
                             : 'text-[var(--text-muted)] cursor-not-allowed'
-                        }`}
+                          }`}
                       >
                         <div className="min-w-0">
                           <p className="font-bold truncate">{u.name}</p>
@@ -219,28 +218,28 @@ function App() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ background: gameState.perception > 50 ? 'var(--accent-green)' : gameState.perception > 25 ? 'var(--accent-amber)' : 'var(--accent-red)' }} />
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: gameState.perceptionCurrent > 50 ? 'var(--accent-green)' : gameState.perceptionCurrent > 25 ? 'var(--accent-amber)' : 'var(--accent-red)' }} />
               <span className="text-sm uppercase tracking-[0.15em] text-[var(--text-secondary)]">Perception</span>
             </div>
-            <span className={`text-lg font-bold ${gameState.perception > 50 ? 'glow-green' : gameState.perception > 25 ? 'glow-amber' : 'glow-red'}`} style={{ fontFamily: 'Orbitron, sans-serif' }}>
-              {gameState.perception.toFixed(1)}%
+            <span className={`text-lg font-bold ${gameState.perceptionCurrent > 50 ? 'glow-green' : gameState.perceptionCurrent > 25 ? 'glow-amber' : 'glow-red'}`} style={{ fontFamily: 'Orbitron, sans-serif' }}>
+              {((gameState.perceptionCurrent / gameState.perceptionMax) * 100).toFixed(2)}%
             </span>
           </div>
           <div className="w-full h-4 rounded-full bg-[var(--tertiary-bg)] overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500 ease-out"
               style={{
-                width: `${Math.max(gameState.perception, 0)}%`,
-                background: gameState.perception > 50
+                width: `${Math.max(gameState.perceptionCurrent, 0)}%`,
+                background: gameState.perceptionCurrent > 50
                   ? 'linear-gradient(90deg, #00e5a0, #00bcd4)'
-                  : gameState.perception > 25
-                  ? 'linear-gradient(90deg, #f0b429, #ff8c00)'
-                  : 'linear-gradient(90deg, #ff4757, #ff6b81)',
-                boxShadow: gameState.perception > 50
+                  : gameState.perceptionCurrent > 25
+                    ? 'linear-gradient(90deg, #f0b429, #ff8c00)'
+                    : 'linear-gradient(90deg, #ff4757, #ff6b81)',
+                boxShadow: gameState.perceptionCurrent > 50
                   ? '0 0 12px rgba(0,229,160,0.4)'
-                  : gameState.perception > 25
-                  ? '0 0 12px rgba(240,180,41,0.4)'
-                  : '0 0 12px rgba(255,71,87,0.4)',
+                  : gameState.perceptionCurrent > 25
+                    ? '0 0 12px rgba(240,180,41,0.4)'
+                    : '0 0 12px rgba(255,71,87,0.4)',
               }}
             />
           </div>
@@ -277,78 +276,78 @@ function App() {
 
       {/* ═══ MAIN AREA ═══ */}
       <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
-          {/* Background grid */}
-          <div className="absolute inset-0 opacity-5" style={{
-            backgroundImage: 'radial-gradient(var(--accent-green) 1px, transparent 1px)',
-            backgroundSize: '40px 40px'
-          }} />
+        {/* Background grid */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: 'radial-gradient(var(--accent-green) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }} />
 
-          {/* Core click area — Building */}
-          <div className="relative z-10 flex flex-col items-center">
-            <div
-              className={`hq-core group ${clickAnim ? 'animate-clickPulse' : ''}`}
-              onClick={handleClick}
+        {/* Core click area — Building */}
+        <div className="relative z-10 flex flex-col items-center">
+          <div
+            className={`hq-core group ${clickAnim ? 'animate-clickPulse' : ''}`}
+            onClick={handleClick}
+          >
+            <svg
+              width="180"
+              height="220"
+              viewBox="0 0 180 220"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="drop-shadow-[0_0_25px_rgba(0,229,160,0.3)] group-hover:drop-shadow-[0_0_35px_rgba(0,229,160,0.5)] transition-all duration-200"
             >
-              <svg
-                width="180"
-                height="220"
-                viewBox="0 0 180 220"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="drop-shadow-[0_0_25px_rgba(0,229,160,0.3)] group-hover:drop-shadow-[0_0_35px_rgba(0,229,160,0.5)] transition-all duration-200"
-              >
-                {/* Building body */}
-                <rect x="40" y="50" width="100" height="160" rx="4" fill="var(--panel-bg)" stroke="var(--accent-green)" strokeWidth="1.5" opacity="0.9" />
-                {/* Roof / antenna */}
-                <polygon points="90,8 70,50 110,50" fill="var(--panel-bg)" stroke="var(--accent-green)" strokeWidth="1.5" />
-                <line x1="90" y1="0" x2="90" y2="12" stroke="var(--accent-green)" strokeWidth="2" />
-                <circle cx="90" cy="4" r="3" fill="var(--accent-green)" className="animate-pulse" />
-                {/* Windows row 1 */}
-                <rect x="54" y="68" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.6" />
-                <rect x="82" y="68" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.8" />
-                <rect x="110" y="68" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.5" />
-                {/* Windows row 2 */}
-                <rect x="54" y="92" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.7" />
-                <rect x="82" y="92" width="16" height="12" rx="1" fill="var(--accent-green)" opacity="0.9" />
-                <rect x="110" y="92" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.6" />
-                {/* Windows row 3 */}
-                <rect x="54" y="116" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.5" />
-                <rect x="82" y="116" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.7" />
-                <rect x="110" y="116" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.8" />
-                {/* Windows row 4 */}
-                <rect x="54" y="140" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.6" />
-                <rect x="82" y="140" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.5" />
-                <rect x="110" y="140" width="16" height="12" rx="1" fill="var(--accent-green)" opacity="0.7" />
-                {/* Door */}
-                <rect x="76" y="172" width="28" height="38" rx="2" fill="var(--tertiary-bg)" stroke="var(--accent-green)" strokeWidth="1" />
-                <circle cx="98" cy="192" r="2" fill="var(--accent-green)" />
-                {/* Base */}
-                <rect x="30" y="208" width="120" height="6" rx="2" fill="var(--accent-green)" opacity="0.3" />
-              </svg>
-            </div>
+              {/* Building body */}
+              <rect x="40" y="50" width="100" height="160" rx="4" fill="var(--panel-bg)" stroke="var(--accent-green)" strokeWidth="1.5" opacity="0.9" />
+              {/* Roof / antenna */}
+              <polygon points="90,8 70,50 110,50" fill="var(--panel-bg)" stroke="var(--accent-green)" strokeWidth="1.5" />
+              <line x1="90" y1="0" x2="90" y2="12" stroke="var(--accent-green)" strokeWidth="2" />
+              <circle cx="90" cy="4" r="3" fill="var(--accent-green)" className="animate-pulse" />
+              {/* Windows row 1 */}
+              <rect x="54" y="68" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.6" />
+              <rect x="82" y="68" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.8" />
+              <rect x="110" y="68" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.5" />
+              {/* Windows row 2 */}
+              <rect x="54" y="92" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.7" />
+              <rect x="82" y="92" width="16" height="12" rx="1" fill="var(--accent-green)" opacity="0.9" />
+              <rect x="110" y="92" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.6" />
+              {/* Windows row 3 */}
+              <rect x="54" y="116" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.5" />
+              <rect x="82" y="116" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.7" />
+              <rect x="110" y="116" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.8" />
+              {/* Windows row 4 */}
+              <rect x="54" y="140" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.6" />
+              <rect x="82" y="140" width="16" height="12" rx="1" fill="var(--accent-teal)" opacity="0.5" />
+              <rect x="110" y="140" width="16" height="12" rx="1" fill="var(--accent-green)" opacity="0.7" />
+              {/* Door */}
+              <rect x="76" y="172" width="28" height="38" rx="2" fill="var(--tertiary-bg)" stroke="var(--accent-green)" strokeWidth="1" />
+              <circle cx="98" cy="192" r="2" fill="var(--accent-green)" />
+              {/* Base */}
+              <rect x="30" y="208" width="120" height="6" rx="2" fill="var(--accent-green)" opacity="0.3" />
+            </svg>
+          </div>
 
-            <div className="mt-6 text-center">
-              <h2 className="text-2xl uppercase tracking-[0.3em] text-[var(--text-primary)]" style={{ fontFamily: 'Orbitron, sans-serif' }}>
-                Corporate_HQ
-              </h2>
-              <p className="text-base text-[var(--accent-green)] mt-2 tracking-wider">
-                +{formatMoney(moneyPerTick)} / click
+          <div className="mt-6 text-center">
+            <h2 className="text-2xl uppercase tracking-[0.3em] text-[var(--text-primary)]" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+              Corporate_HQ
+            </h2>
+            <p className="text-base text-[var(--accent-green)] mt-2 tracking-wider">
+              +{formatMoney(moneyPerTick)} / click
+            </p>
+          </div>
+        </div>
+
+        {/* Alert banner */}
+        {(gameState.perceptionCurrent < 50 || pollutionPerTick > 100) && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 alert-banner px-6 py-3 flex items-center gap-3">
+            <span className="text-[var(--accent-amber)]">△</span>
+            <div>
+              <p className="text-xs font-bold text-[var(--accent-amber)] uppercase tracking-wider">Active Alerts</p>
+              <p className="text-xs text-[var(--text-secondary)]">
+                {gameState.perceptionCurrent < 50 ? 'Perception critically low' : 'High pollution output detected'}
               </p>
             </div>
           </div>
-
-          {/* Alert banner */}
-          {(gameState.perception < 50 || pollutionPerTick > 100) && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 alert-banner px-6 py-3 flex items-center gap-3">
-              <span className="text-[var(--accent-amber)]">△</span>
-              <div>
-                <p className="text-xs font-bold text-[var(--accent-amber)] uppercase tracking-wider">Active Alerts</p>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  {gameState.perception < 50 ? 'Perception critically low' : 'High pollution output detected'}
-                </p>
-              </div>
-            </div>
-          )}
+        )}
       </div>
 
       {/* ═══ BOTTOM NAV ═══ */}

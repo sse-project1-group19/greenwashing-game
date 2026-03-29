@@ -75,12 +75,12 @@ export const useGameStore = create<GameStore>((set) => ({
 
   addPerception: (amount: number) => {
     set((state) => {
-      const newPerception = state.gameState.perception + amount;
+      const newPerception = state.gameState.perceptionCurrent + amount;
       return {
         gameState: {
           ...state.gameState,
-          perception: newPerception,
-          gameState: newPerception <= 0 && state.gameState.gameState === 'playing' ? 'lost' : state.gameState.gameState,
+          perceptionCurrent: Math.min(newPerception, state.gameState.perceptionCurrent + amount),
+          gameState: state.gameState.perceptionCurrent <= 0 && state.gameState.gameState === 'playing' ? 'lost' : state.gameState.gameState,
         },
       };
     });
@@ -89,12 +89,12 @@ export const useGameStore = create<GameStore>((set) => ({
   buyUpgrade: (upgrade: Upgrade) => {
     set((state) => {
       if (state.gameState.money < upgrade.cost) return state;
-      const newPerception = state.gameState.perception + (upgrade.perceptionImpact ?? 0);
+      const newPerception = state.gameState.perceptionMax + (upgrade.perceptionImpact ?? 0);
       return {
         gameState: {
           ...state.gameState,
           money: state.gameState.money - upgrade.cost,
-          perception: newPerception,
+          perceptionMax: newPerception,
           gameState: newPerception <= 0 && state.gameState.gameState === 'playing' ? 'lost' : state.gameState.gameState,
           ownedUpgrades: [...state.gameState.ownedUpgrades, upgrade],
         },

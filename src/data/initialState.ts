@@ -6,6 +6,7 @@ export const createInitialGameState = (): GameState => ({
   baseMoneyPerTick: 1,
   pollution: 0,
   turn: 0,
-  perception: 100,
+  perceptionCurrent: 100,
+  perceptionMax: 100,
   gameState: 'not_started',
 });

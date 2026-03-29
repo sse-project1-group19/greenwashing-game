@@ -28,7 +28,8 @@ interface GameState {
   baseMoneyPerTick: number,
   pollution: number,
   turn: number,
-  perception: number,
+  perceptionCurrent: number,
+  perceptionMax: number,
   gameState: 'not_started' | 'playing' | 'won' | 'lost'
 }
 
