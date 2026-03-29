@@ -1,7 +1,7 @@
 import type { GameState } from '../types/index';
 
 export const createInitialGameState = (): GameState => ({
-  money: 0,
+  money: 500,
   ownedUpgrades: [],
   baseMoneyPerTick: 1,
   pollution: 0,

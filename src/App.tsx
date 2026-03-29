@@ -15,12 +15,12 @@ function App() {
   const [isUpgradesDropdownOpen, setIsUpgradesDropdownOpen] = useState(false);
   const [clickAnim, setClickAnim] = useState(false);
 
-  const gameState = useGameStore((state) => state.gameState);
+  var gameState = useGameStore((state) => state.gameState);
   const startNewGame = useGameStore((state) => state.startNewGame);
   const resetGame = useGameStore((state) => state.resetGame);
   const buyUpgrade = useGameStore((state) => state.buyUpgrade);
 
-  const { processTurn } = useGameEngine(gameState);
+  const { processTurn } = useGameEngine();
 
   const moneyPerTick = gameState.baseMoneyPerTick + calculateMoneyPerTick(gameState.ownedUpgrades);
   const pollutionPerTick = calculatePollutionPerTick(gameState.ownedUpgrades);
@@ -29,7 +29,10 @@ function App() {
   const perceptionUpgrades = UPGRADES.filter(u => u.category === 'perception');
 
   const handleClick = () => {
-    processTurn();
+    const newGameState = processTurn(gameState);
+    if (newGameState) {
+      gameState = newGameState;
+    }
     setClickAnim(true);
     setTimeout(() => setClickAnim(false), 400);
   };
