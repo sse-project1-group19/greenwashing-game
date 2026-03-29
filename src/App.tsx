@@ -121,28 +121,36 @@ function App() {
     gameState.baseMoneyPerSecond + calculateMoneyPerSecond(gameState.ownedUpgrades);
   const pollutionPerSecond = calculatePollutionPerSecond(gameState.ownedUpgrades);
 
-  const statsItems = useMemo(
-    () => [
-      { label: 'Total money', value: formatMoney(gameState.money), accent: 'profit' as const },
-      {
-        label: 'Total pollution',
-        value: gameState.pollution.toFixed(2),
-        accent: gameState.pollution > 0 ? ('danger' as const) : ('neutral' as const),
-      },
-      { label: 'Time in game', value: formatTimeInGame(elapsedSeconds), accent: 'neutral' as const },
-      {
-        label: 'Upgrades purchased',
-        value: String(gameState.ownedUpgrades.length),
-        accent: 'neutral' as const,
-      },
-      {
-        label: 'Times Clicker is clicked',
-        value: String(gameState.totalClicks),
-        accent: 'neutral' as const,
-      },
-    ],
-    [elapsedSeconds, gameState.money, gameState.ownedUpgrades.length, gameState.pollution, gameState.totalClicks],
-  );
+const statsItems = useMemo(
+  () => [
+    { label: 'Total money', value: formatMoney(gameState.money), accent: 'profit' as const },
+    { label: 'Money per second', value: formatMoney(moneyPerSecond), accent: 'profit' as const },
+    {
+      label: 'Total pollution',
+      value: gameState.pollution.toFixed(2),
+      accent: gameState.pollution > 0 ? ('danger' as const) : ('neutral' as const),
+    },
+    { label: 'Time in game', value: formatTimeInGame(elapsedSeconds), accent: 'neutral' as const },
+    {
+      label: 'Upgrades purchased',
+      value: String(gameState.ownedUpgrades.length),
+      accent: 'neutral' as const,
+    },
+    {
+      label: 'Times Clicker is clicked',
+      value: String(gameState.totalClicks),
+      accent: 'neutral' as const,
+    },
+  ],
+  [
+    elapsedSeconds,
+    gameState.money,
+    gameState.ownedUpgrades.length,
+    gameState.pollution,
+    gameState.totalClicks,
+    moneyPerSecond,
+  ],
+);
 
   const handleStartNewGame = () => {
     startNewGame();
