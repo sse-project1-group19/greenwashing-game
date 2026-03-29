@@ -19,13 +19,13 @@ export function useGameEngine() {
     console.log(`Processing turn ${state.turn + 1}...`);
 
     const moneyPerTick = state.baseMoneyPerTick + calculateMoneyPerTick(state.ownedUpgrades);
+    addMoney(moneyPerTick);
     const pollutionPerTick = calculatePollutionPerTick(state.ownedUpgrades);
+    addPollution(pollutionPerTick);
     const perceptionDegradationPerTick = updatePerceptionOnTick(state);
+    addPerception(perceptionDegradationPerTick);
 
     tick();
-    addMoney(moneyPerTick);
-    addPollution(pollutionPerTick);
-    addPerception(perceptionDegradationPerTick);
     return state;
   };
 

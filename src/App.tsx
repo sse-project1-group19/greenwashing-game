@@ -224,9 +224,14 @@ function App() {
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: gameState.perceptionCurrent > 50 ? 'var(--accent-green)' : gameState.perceptionCurrent > 25 ? 'var(--accent-amber)' : 'var(--accent-red)' }} />
               <span className="text-sm uppercase tracking-[0.15em] text-[var(--text-secondary)]">Perception</span>
             </div>
-            <span className={`text-lg font-bold ${gameState.perceptionCurrent > 50 ? 'glow-green' : gameState.perceptionCurrent > 25 ? 'glow-amber' : 'glow-red'}`} style={{ fontFamily: 'Orbitron, sans-serif' }}>
-              {((gameState.perceptionCurrent / gameState.perceptionMax) * 100).toFixed(2)}%
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-lg font-bold glow-green" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+              {gameState.perceptionCurrent.toFixed(0)}
+              </span>
+              <span className="text-xs text-[var(--text-muted)]">
+              / {gameState.perceptionMax}
+              </span>
+            </div>
           </div>
           <div className="w-full h-4 rounded-full bg-[var(--tertiary-bg)] overflow-hidden">
             <div
