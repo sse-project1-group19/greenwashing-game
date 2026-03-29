@@ -254,11 +254,11 @@ function App() {
               <span className="text-sm uppercase tracking-[0.15em] text-[var(--text-secondary)]">Pollution</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-[var(--accent-amber)]">
-                {pollutionPerTick > 0 ? `+${pollutionPerTick}/s` : 'clean'}
-              </span>
               <span className="text-lg font-bold glow-amber" style={{ fontFamily: 'Orbitron, sans-serif' }}>
                 {gameState.pollution.toFixed(0)}
+              </span>
+              <span className="text-xs text-[var(--accent-amber)]">
+                {pollutionPerTick > 0 ? `+${pollutionPerTick}/s` : 'clean'}
               </span>
             </div>
           </div>
