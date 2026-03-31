@@ -2,44 +2,29 @@ import { create } from 'zustand';
 import { createInitialGameState } from '../data/initialState';
 import type { GameState, Upgrade } from '../types/index';
 
-// ---------------------------------------------------------------------------
-// Pure helper functions – exported for use by gameEngine
-// ---------------------------------------------------------------------------
-
-export const calculateMoneyPerTick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, u) => sum + (u.moneyPerTick ?? 0), 0);
+export const calculateMoneyPerSecond = (upgrades: Upgrade[]): number =>
+  upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerSecond ?? 0), 0);
 
 export const calculateMoneyPerClick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, u) => sum + (u.moneyPerClick ?? 0), 0);
+  upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerClick ?? 0), 0);
 
-export const calculatePollutionPerTick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, u) => sum + (u.pollutionPerTick ?? 0), 0);
+export const calculatePollutionPerSecond = (upgrades: Upgrade[]): number =>
+  upgrades.reduce((sum, upgrade) => sum + (upgrade.pollutionPerSecond ?? 0), 0);
 
-
-// ---------------------------------------------------------------------------
-// Store shape
-// ---------------------------------------------------------------------------
+interface ProcessTickPayload {
+  passiveMoneyDelta: number;
+  pollutionDelta: number;
+}
 
 interface GameStore {
   gameState: GameState;
-
-  // Lifecycle
   startNewGame: () => void;
   resetGame: () => void;
-
-  // Per-tick mutations (called by gameEngine)
-  tick: () => void;
-  addMoney: (amount: number) => void;
-  addPollution: (amount: number) => void;
+  registerClick: () => void;
+  processTick: (payload: ProcessTickPayload) => void;
   addPerception: (amount: number) => void;
-
-  // Player actions
-  buyUpgrade: (upgrade: Upgrade) => void;
+  buyUpgrade: (upgrade: Upgrade) => boolean;
 }
-
-// ---------------------------------------------------------------------------
-// Store
-// ---------------------------------------------------------------------------
 
 export const useGameStore = create<GameStore>((set) => ({
   gameState: createInitialGameState(),
@@ -52,30 +37,40 @@ export const useGameStore = create<GameStore>((set) => ({
     set({ gameState: createInitialGameState() });
   },
 
-  tick: () => {
+  registerClick: () => {
     set((state) => {
-      return {
-        gameState: { ...state.gameState, turn: state.gameState.turn + 1 },
+      if (state.gameState.gameState !== 'playing') {
+        return state;
       }
-    });
-  },
 
-  addMoney: (amount: number) => {
-    set((state) => {
-      return {
-        gameState: { ...state.gameState, money: state.gameState.money + amount },
-      }
-    });
-  },
-
-  addPollution: (amount: number) => {
-    set((state) => {
       return {
         gameState: {
           ...state.gameState,
-          pollution: state.gameState.pollution + amount,
+          currentTickClicks: state.gameState.currentTickClicks + 1,
+          totalClicks: state.gameState.totalClicks + 1,
         },
+      };
+    });
+  },
+
+  processTick: ({ passiveMoneyDelta, pollutionDelta }) => {
+    set((state) => {
+      if (state.gameState.gameState !== 'playing') {
+        return state;
       }
+
+      const clickValue = 1 + calculateMoneyPerClick(state.gameState.ownedUpgrades);
+      const clickMoney = state.gameState.currentTickClicks * clickValue;
+
+      return {
+        gameState: {
+          ...state.gameState,
+          tick: state.gameState.tick + 1,
+          money: state.gameState.money + passiveMoneyDelta + clickMoney,
+          pollution: state.gameState.pollution + pollutionDelta,
+          currentTickClicks: 0,
+        },
+      };
     });
   },
 
@@ -85,17 +80,28 @@ export const useGameStore = create<GameStore>((set) => ({
       return {
         gameState: {
           ...state.gameState,
-          perceptionCurrent: Math.min(newPerception, state.gameState.perceptionCurrent + amount),
-          gameState: state.gameState.perceptionCurrent <= 0 && state.gameState.gameState === 'playing' ? 'lost' : state.gameState.gameState,
+          perception: newPerception,
+          gameState:
+            newPerception <= 0 && state.gameState.gameState === 'playing'
+              ? 'lost'
+              : state.gameState.gameState,
         },
       };
     });
   },
 
   buyUpgrade: (upgrade: Upgrade) => {
+    let wasPurchased = false;
+
     set((state) => {
-      if (state.gameState.money < upgrade.cost) return state;
-      const newPerception = state.gameState.perceptionMax + (upgrade.perceptionImpact ?? 0);
+      const isAlreadyOwned = state.gameState.ownedUpgrades.some((owned) => owned.id === upgrade.id);
+      if (isAlreadyOwned || state.gameState.money < upgrade.cost) {
+        return state;
+      }
+
+      const newPerception = state.gameState.perception + (upgrade.perceptionImpact ?? 0);
+      wasPurchased = true;
+
       return {
         gameState: {
           ...state.gameState,
@@ -107,5 +113,7 @@ export const useGameStore = create<GameStore>((set) => ({
         },
       };
     });
+
+    return wasPurchased;
   },
 }));

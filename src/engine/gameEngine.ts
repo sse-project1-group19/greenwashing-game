@@ -1,41 +1,55 @@
-import { useEffect } from "react";
-import { useGameStore, calculateMoneyPerTick, calculatePollutionPerTick } from "../store/gameStore";
 import { updatePerceptionOnTick } from "../logic/perception";
-import { GameState } from "@/types/index";
+import { useCallback, useEffect } from 'react';
+import {
+  useGameStore,
+  calculateMoneyPerSecond,
+  calculatePollutionPerSecond,
+} from '../store/gameStore';
 
-/**
- * Game Engine Hook
- * Automatically ticks the game every 1 second while in 'playing' state.
- */
+const TICK_RATE_MS = 50;
+
 export function useGameEngine() {
-  var gamestate = useGameStore((state) => state.gameState);
-  const tick = useGameStore((state) => state.tick);
-  const addMoney = useGameStore((state) => state.addMoney);
-  const addPollution = useGameStore((state) => state.addPollution);
-  const addPerception = useGameStore((state) => state.addPerception);
+  const gameStatus = useGameStore((state) => state.gameState.gameState);
+  const processStoredTick = useGameStore((state) => state.processTick);
+  const registerStoredClick = useGameStore((state) => state.registerClick);
 
-  const processTurn = (state: GameState) => {
-    if (state.gameState !== 'playing') return;
-    console.log(`Processing turn ${state.turn + 1}...`);
+  const clickButton = useCallback(() => {
+    const { gameState } = useGameStore.getState();
 
-    const moneyPerTick = state.baseMoneyPerTick + calculateMoneyPerTick(state.ownedUpgrades);
-    addMoney(moneyPerTick);
-    const pollutionPerTick = calculatePollutionPerTick(state.ownedUpgrades);
-    addPollution(pollutionPerTick);
-    const perceptionDegradationPerTick = updatePerceptionOnTick(state);
-    addPerception(perceptionDegradationPerTick);
+    if (gameState.gameState !== 'playing') {
+      return;
+    }
 
-    tick();
-    return state;
-  };
+    registerStoredClick();
+  }, [registerStoredClick]);
 
   useEffect(() => {
-    if (gamestate.gameState !== 'playing') return;
+    if (gameStatus !== 'playing') {
+      return;
+    }
 
-    const interval = setInterval(processTurn, 1000, gamestate);
+    const intervalId = window.setInterval(() => {
+      const { gameState } = useGameStore.getState();
 
-    return () => clearInterval(interval);
-  }, [gamestate.gameState, gamestate.ownedUpgrades, gamestate.baseMoneyPerTick, tick, addMoney, addPollution, addPerception, processTurn, gamestate]);
+      if (gameState.gameState !== 'playing') {
+        return;
+      }
 
-  return { processTurn };
+      const tickDurationSeconds = TICK_RATE_MS / 1000;
+
+      const passiveMoneyPerSecond =
+        gameState.baseMoneyPerSecond + calculateMoneyPerSecond(gameState.ownedUpgrades);
+
+      const pollutionPerSecond = calculatePollutionPerSecond(gameState.ownedUpgrades);
+
+      processStoredTick({
+        passiveMoneyDelta: passiveMoneyPerSecond * tickDurationSeconds,
+        pollutionDelta: pollutionPerSecond * tickDurationSeconds,
+      });
+    }, TICK_RATE_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [gameStatus, processStoredTick]);
+
+  return { clickButton };
 }
