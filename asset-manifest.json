@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/greenwashing-game/static/css/main.45fb31f9.css",
-    "main.js": "/greenwashing-game/static/js/main.aca0046a.js",
+    "main.css": "/greenwashing-game/static/css/main.4ec35c07.css",
+    "main.js": "/greenwashing-game/static/js/main.471345df.js",
     "index.html": "/greenwashing-game/index.html",
-    "main.45fb31f9.css.map": "/greenwashing-game/static/css/main.45fb31f9.css.map",
-    "main.aca0046a.js.map": "/greenwashing-game/static/js/main.aca0046a.js.map"
+    "main.4ec35c07.css.map": "/greenwashing-game/static/css/main.4ec35c07.css.map",
+    "main.471345df.js.map": "/greenwashing-game/static/js/main.471345df.js.map"
   },
   "entrypoints": [
-    "static/css/main.45fb31f9.css",
-    "static/js/main.aca0046a.js"
+    "static/css/main.4ec35c07.css",
+    "static/js/main.471345df.js"
   ]
 }
