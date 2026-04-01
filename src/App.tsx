@@ -117,7 +117,7 @@ function App() {
         <div className="animate-fadeIn max-w-xl px-6 text-center">
           <div className="mb-8">
             <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-              // SYSTEM BOOT v1.0
+              {'// SYSTEM BOOT v1.0'}
             </p>
             <h1 className="mb-2 text-4xl font-bold md:text-5xl" style={{ fontFamily: 'Orbitron, sans-serif' }}>
               <span className="glow-green">CARBON</span>
@@ -155,7 +155,7 @@ function App() {
       <div className="game-over-overlay flex min-h-screen items-center justify-center">
         <div className="animate-fadeIn max-w-xl px-6 text-center">
           <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[var(--accent-red)]">
-            // SYSTEM FAILURE
+            {'// SYSTEM FAILURE'}
           </p>
           <h1
             className="glow-red mb-4 text-4xl font-bold md:text-5xl"
