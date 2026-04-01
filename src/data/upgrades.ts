@@ -92,6 +92,42 @@ export const UPGRADES: Upgrade[] = [
   // -------------------------------------------------------------
   // PERCEPTION UPGRADES (Good)
   // -------------------------------------------------------------
-
+  {
+    "id": 9,
+    "name": "Real-Time Energy Matching",
+    "description": "Guarantee that every hour of power your AI consumes is matched by an hour of clean energy generated on the same local grid.",
+    "category": "perception",
+    "cost": 8000,
+    "perceptionImpact": 25,
+    "educationalMessage": "24/7 CFE forces companies to support local clean energy rather than just buying cheap credits from across the globe.",
+    "realWorldEvidence": "Major tech companies such as, Google and Microsoft have shifted toward 24/7 CFE. 24/7 matching requires the energy to be clean at the exact moment of use, whereas traditional offsetting permits for balancing non green energy with green energy between different countries.",
+    "source": "24/7 by 2030: Realizing a Carbon-free Future",
+    "sourceUrl": "https://www.gstatic.com/gumdrop/sustainability/247-carbon-free-energy.pdf"
+  },
+  {
+    "id": 10,
+    "name": "Model Distillation",
+    "description": "Use a massive model to train a smaller, distilled and efficient model with similar performance for a fraction of the carbon cost.",
+    "category": "production",
+    "cost": 4000,
+    "perceptionImpact": 10,
+    "educationalMessage": "Distillation allows us to significantly reduce energy per request, by distilling bigger models allowing them to be ran with minimal hardware as supposed to server farms.",
+    "realWorldEvidence": "DistilBERT a distilled version of BERT retains about 97% of the performance, while being 40% smaller and 60% faster.",
+    "source": "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter",
+    "sourceUrl": "https://arxiv.org/abs/1910.01108"
+  },
+  {
+    "id": 11,
+    "name": "Cloud-Powered Radiators",
+    "description": "Capture and use waste heat from your server racks to provide free sustainable heating to the neighborhood.",
+    "category": "perception",
+    "cost": 12000,
+    "perceptionImpact": 30,
+    "educationalMessage": "Data centers generate a great quantity of heat due to the hardware. Instead of using more energy to cool the hardware, the heat can be used to replace gas boilers in nearby housing.",
+    "realWorldEvidence": "The Tallaght District Heating Scheme in Ireland uses waste heat from an Amazon Web Services data center.",
+    "source": "Tallaght District Heating Scheme",
+    "sourceUrl": "https://www.seai.ie/case-studies/tallaght-district-heating/"
+  },
+  
   // TODO: Add good upgrades here linked to SSE course material
 ];
