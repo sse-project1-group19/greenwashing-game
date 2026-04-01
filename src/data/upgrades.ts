@@ -125,7 +125,7 @@ export const UPGRADES: Upgrade[] = [
     "perceptionImpact": 30,
     "educationalMessage": "Data centers generate a great quantity of heat due to the hardware. Instead of using more energy to cool the hardware, the heat can be used to replace gas boilers in nearby housing.",
     "realWorldEvidence": "The Tallaght District Heating Scheme in Ireland uses waste heat from an Amazon Web Services data center.",
-    "source": "Tallaght District Heating Scheme",
+    "source": "Sustainable Energy Authority of Ireland",
     "sourceUrl": "https://www.seai.ie/case-studies/tallaght-district-heating/"
   },
   
