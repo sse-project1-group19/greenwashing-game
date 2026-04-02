@@ -289,7 +289,10 @@ function App() {
                     <div
                       className="h-full rounded-full transition-all duration-500 ease-out"
                       style={{
-                        width: `${Math.max(gameState.perceptionMax, 0)}%`,
+                        width:
+                          gameState.perceptionMax > 0
+                            ? `${Math.max(0, Math.min((gameState.perceptionCurrent / gameState.perceptionMax) * 100, 100))}%`
+                            : '0%',
                         background:
                           gameState.perceptionCurrent > 50
                             ? 'linear-gradient(90deg, #00e5a0, #00bcd4)'
