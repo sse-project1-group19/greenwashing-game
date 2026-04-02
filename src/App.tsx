@@ -9,7 +9,7 @@ import { useGameEngine } from './engine/gameEngine';
 import { UPGRADES } from './data/upgrades';
 import type { Upgrade } from './types/index';
 
-type View = 'clicker' | 'stats';
+type View = 'clicker' | 'stats' | 'settings';
 
 const TICK_RATE_MS = 50;
 
@@ -576,7 +576,7 @@ function App() {
             </article>
           </div>
         </section>
-      ) : (
+      ) : activeView === 'stats' ? (
         <section className="flex-1 min-h-0 px-4 py-6 pb-24">
           <StatsView statsItems={statsItems} />
           <div className="mx-auto mt-6 w-full max-w-3xl">
@@ -589,7 +589,9 @@ function App() {
             </button>
           </div>
         </section>
-      )}
+      ) : (<section className="flex-1 min-h-0 px-4 py-6 pb-24 overflow-y-auto">
+          <SettingsView />
+        </section>)}
 
       {activeView === 'clicker' && (
         <footer className="flex border-t border-[var(--border-color)] pt-2">
@@ -714,6 +716,13 @@ function BottomNavigation({ activeView, onChangeView }: BottomNavigationProps) {
         >
           📊
         </NavButton>
+        <NavButton
+          label="Settings"
+          isActive={activeView === 'settings'}
+          onClick={() => onChangeView('settings')}
+        >
+          ⚙️
+        </NavButton>
       </div>
     </nav>
   );
@@ -741,6 +750,138 @@ function NavButton({ children, label, isActive, onClick }: NavButtonProps) {
       <span className="text-xl">{children}</span>
       <span className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.14em]">{label}</span>
     </button>
+  );
+}
+
+const THEMES = [
+  {
+    id: 'default',
+    name: 'Carbon Green',
+    colors: {
+      '--accent-green': '#00e5a0',
+      '--accent-teal': '#00bcd4',
+      '--accent-amber': '#f0b429',
+      '--accent-red': '#ff4757',
+    }
+  },
+  {
+    id: 'cyberpunk',
+    name: 'Neon Protocol',
+    colors: {
+      '--accent-green': '#ff2a6d',
+      '--accent-teal': '#05d9e8',
+      '--accent-amber': '#d1f7ff',
+      '--accent-red': '#01ffe6',
+    }
+  },
+  {
+    id: 'corporate',
+    name: 'Blue Chip',
+    colors: {
+      '--accent-green': '#3b82f6',
+      '--accent-teal': '#60a5fa',
+      '--accent-amber': '#f59e0b',
+      '--accent-red': '#ef4444',
+    }
+  }
+];
+
+function SettingsView() {
+  const [customColors, setCustomColors] = useState({
+    '--accent-green': '#00e5a0',
+    '--accent-teal': '#00bcd4',
+    '--accent-amber': '#f0b429',
+    '--accent-red': '#ff4757',
+  });
+
+  const applyTheme = (theme: typeof THEMES[0]) => {
+    Object.entries(theme.colors).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+  };
+
+  const applyCustomTheme = () => {
+    Object.entries(customColors).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+  };
+
+  const handleCustomColorChange = (key: string, value: string) => {
+    setCustomColors((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const customColorLabels: Record<string, string> = {
+    '--accent-green': 'Primary / Revenue',
+    '--accent-teal': 'Secondary / Accents',
+    '--accent-amber': 'Warning / Pollution',
+    '--accent-red': 'Danger / Alerts',
+  };
+
+  return (
+    <section className="mx-auto w-full max-w-3xl rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-dark sm:p-8">
+      <div className="mb-8 border-b border-slate-700 pb-5">
+        <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Configuration</p>
+        <h2 className="mt-2 text-3xl font-bold text-white">System Settings</h2>
+      </div>
+
+      <div className="mb-10">
+        <p className="mb-4 text-sm uppercase tracking-wider text-slate-400">Terminal Themes</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {THEMES.map((theme) => (
+            <button
+              key={theme.id}
+              onClick={() => applyTheme(theme)}
+              className="group relative flex flex-col items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 p-4 transition-all hover:border-slate-500 hover:bg-slate-800"
+            >
+              <div className="flex gap-2">
+                {Object.values(theme.colors).map((color, i) => (
+                  <span
+                    key={i}
+                    className="h-4 w-4 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <span className="text-sm font-semibold text-slate-300 group-hover:text-white">
+                {theme.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-4 text-sm uppercase tracking-wider text-slate-400">Custom Protocol</p>
+        <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {Object.entries(customColors).map(([key, value]) => (
+              <div key={key} className="flex items-center justify-between rounded bg-slate-800 p-3">
+                <div className="flex flex-col">
+                  <span className="text-xs uppercase tracking-wider text-slate-300">
+                    {customColorLabels[key]}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">{key}</span>
+                </div>
+                <input
+                  type="color"
+                  value={value}
+                  onChange={(e) => handleCustomColorChange(key, e.target.value)}
+                  className="h-8 w-12 cursor-pointer appearance-none rounded border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-slate-600"
+                />
+              </div>
+            ))}
+          </div>
+          
+          <button
+            onClick={applyCustomTheme}
+            className="mt-6 w-full select-none rounded border border-emerald-500/50 bg-emerald-500/10 py-3 text-xs font-bold uppercase tracking-[0.14em] text-emerald-400 transition-all hover:bg-emerald-500/20 hover:text-emerald-300"
+            style={{ fontFamily: 'Orbitron, sans-serif' }}
+          >
+            Inject Custom Parameters
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
