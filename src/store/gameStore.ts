@@ -3,13 +3,13 @@ import { createInitialGameState } from '../data/initialState';
 import type { GameState, Upgrade } from '../types/index';
 
 export const calculateMoneyPerSecond = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerSecond ?? 0), 0);
+    upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerSecond ?? 0), 0);
 
 export const calculateMoneyPerClick = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerClick ?? 0), 0);
+    upgrades.reduce((sum, upgrade) => sum + (upgrade.moneyPerClick ?? 0), 0);
 
 export const calculatePollutionPerSecond = (upgrades: Upgrade[]): number =>
-  upgrades.reduce((sum, upgrade) => sum + (upgrade.pollutionPerSecond ?? 0), 0);
+    upgrades.reduce((sum, upgrade) => sum + (upgrade.pollutionPerSecond ?? 0), 0);
 
 interface ProcessTickPayload {
   passiveMoneyDelta: number;
@@ -82,9 +82,9 @@ export const useGameStore = create<GameStore>((set) => ({
           ...state.gameState,
           perceptionCurrent: newPerception,
           gameState:
-            newPerception <= 0 && state.gameState.gameState === 'playing'
-              ? 'lost'
-              : state.gameState.gameState,
+              newPerception <= 0 && state.gameState.gameState === 'playing'
+                  ? 'lost'
+                  : state.gameState.gameState,
         },
       };
     });
