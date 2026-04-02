@@ -32,7 +32,7 @@ const formatTimeInGame = (seconds: number): string => {
 function App() {
   const { clickButton } = useGameEngine();
 
-  const gameState = useGameStore((state) => state.gameState);
+  var gameState = useGameStore((state) => state.gameState);
   const startNewGame = useGameStore((state) => state.startNewGame);
   const resetGame = useGameStore((state) => state.resetGame);
   const buyUpgrade = useGameStore((state) => state.buyUpgrade);
@@ -233,13 +233,12 @@ function App() {
                             handleBuy(u);
                             setIsUpgradesDropdownOpen(false);
                           }}
-                          className={`mb-1 flex w-full items-center justify-between gap-2 rounded px-3 py-2.5 text-left text-xs transition-all ${
-                            isOwned
+                          className={`mb-1 flex w-full items-center justify-between gap-2 rounded px-3 py-2.5 text-left text-xs transition-all ${isOwned
                               ? 'cursor-default bg-[rgba(0,229,160,0.05)] text-[var(--accent-green)] opacity-50'
                               : canAfford
                                 ? 'cursor-pointer text-[var(--text-primary)] hover:bg-[rgba(0,229,160,0.1)]'
                                 : 'cursor-not-allowed text-[var(--text-muted)]'
-                          }`}
+                            }`}
                         >
                           <div className="min-w-0">
                             <p className="truncate font-bold">{u.name}</p>
@@ -249,13 +248,12 @@ function App() {
                             </p>
                           </div>
                           <span
-                            className={`shrink-0 text-[10px] uppercase tracking-wider ${
-                              isOwned
+                            className={`shrink-0 text-[10px] uppercase tracking-wider ${isOwned
                                 ? 'text-[var(--accent-green)]'
                                 : canAfford
                                   ? 'text-[var(--accent-teal)]'
                                   : 'text-[var(--text-muted)]'
-                            }`}
+                              }`}
                           >
                             {isOwned ? 'Owned' : formatMoney(u.cost)}
                           </span>
@@ -281,13 +279,12 @@ function App() {
                             handleBuy(u);
                             setIsUpgradesDropdownOpen(false);
                           }}
-                          className={`mb-1 flex w-full items-center justify-between gap-2 rounded px-3 py-2.5 text-left text-xs transition-all ${
-                            isOwned
+                          className={`mb-1 flex w-full items-center justify-between gap-2 rounded px-3 py-2.5 text-left text-xs transition-all ${isOwned
                               ? 'cursor-default bg-[rgba(240,180,41,0.05)] text-[var(--accent-amber)] opacity-50'
                               : canAfford
                                 ? 'cursor-pointer text-[var(--text-primary)] hover:bg-[rgba(240,180,41,0.1)]'
                                 : 'cursor-not-allowed text-[var(--text-muted)]'
-                          }`}
+                            }`}
                         >
                           <div className="min-w-0">
                             <p className="truncate font-bold">{u.name}</p>
@@ -296,13 +293,12 @@ function App() {
                             </p>
                           </div>
                           <span
-                            className={`shrink-0 text-[10px] uppercase tracking-wider ${
-                              isOwned
+                            className={`shrink-0 text-[10px] uppercase tracking-wider ${isOwned
                                 ? 'text-[var(--accent-amber)]'
                                 : canAfford
                                   ? 'text-[var(--accent-teal)]'
                                   : 'text-[var(--text-muted)]'
-                            }`}
+                              }`}
                           >
                             {isOwned ? 'Owned' : formatMoney(u.cost)}
                           </span>
@@ -338,9 +334,9 @@ function App() {
                     className="h-2.5 w-2.5 rounded-full"
                     style={{
                       background:
-                        gameState.perception > 50
+                        gameState.perceptionCurrent > 50
                           ? 'var(--accent-green)'
-                          : gameState.perception > 25
+                          : gameState.perceptionCurrent > 25
                             ? 'var(--accent-amber)'
                             : 'var(--accent-red)',
                     }}
@@ -350,16 +346,15 @@ function App() {
                   </span>
                 </div>
                 <span
-                  className={`text-lg font-bold ${
-                    gameState.perception > 50
+                  className={`text-lg font-bold ${gameState.perceptionCurrent > 50
                       ? 'glow-green'
-                      : gameState.perception > 25
+                      : gameState.perceptionCurrent > 25
                         ? 'glow-amber'
                         : 'glow-red'
-                  }`}
+                    }`}
                   style={{ fontFamily: 'Orbitron, sans-serif' }}
                 >
-                  {gameState.perception.toFixed(1)}%
+                  {gameState.perceptionCurrent.toFixed(1)}/{gameState.perceptionMax.toFixed(1)}
                 </span>
               </div>
 
@@ -367,17 +362,17 @@ function App() {
                 <div
                   className="h-full rounded-full transition-all duration-500 ease-out"
                   style={{
-                    width: `${Math.max(gameState.perception, 0)}%`,
+                    width: `${Math.max(gameState.perceptionMax, 0)}%`,
                     background:
-                      gameState.perception > 50
+                      gameState.perceptionCurrent > 50
                         ? 'linear-gradient(90deg, #00e5a0, #00bcd4)'
-                        : gameState.perception > 25
+                        : gameState.perceptionCurrent > 25
                           ? 'linear-gradient(90deg, #f0b429, #ff8c00)'
                           : 'linear-gradient(90deg, #ff4757, #ff6b81)',
                     boxShadow:
-                      gameState.perception > 50
+                      gameState.perceptionCurrent > 50
                         ? '0 0 12px rgba(0,229,160,0.4)'
-                        : gameState.perception > 25
+                        : gameState.perceptionCurrent > 25
                           ? '0 0 12px rgba(240,180,41,0.4)'
                           : '0 0 12px rgba(255,71,87,0.4)',
                   }}
@@ -473,7 +468,7 @@ function App() {
               </div>
             </div>
 
-            {(gameState.perception < 50 || pollutionPerSecond > 100) && (
+            {(gameState.perceptionCurrent < 50 || pollutionPerSecond > 100) && (
               <div className="alert-banner absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 px-6 py-3">
                 <span className="text-[var(--accent-amber)]">△</span>
                 <div>
@@ -481,7 +476,7 @@ function App() {
                     Active Alerts
                   </p>
                   <p className="text-xs text-[var(--text-secondary)]">
-                    {gameState.perception < 50 ? 'Perception critically low' : 'High pollution output detected'}
+                    {gameState.perceptionCurrent < 50 ? 'Perception critically low' : 'High pollution output detected'}
                   </p>
                 </div>
               </div>
@@ -574,13 +569,12 @@ function StatsView({ statsItems }: StatsViewProps) {
           >
             <span className="text-base font-medium text-slate-300">{item.label}</span>
             <span
-              className={`text-2xl font-bold ${
-                item.accent === 'profit'
+              className={`text-2xl font-bold ${item.accent === 'profit'
                   ? 'text-emerald-400'
                   : item.accent === 'danger'
                     ? 'text-rose-400'
                     : 'text-white'
-              }`}
+                }`}
             >
               {item.value}
             </span>

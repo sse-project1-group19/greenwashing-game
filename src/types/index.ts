@@ -28,7 +28,8 @@ export interface GameState {
   baseMoneyPerSecond: number;
   pollution: number;
   tick: number;
-  perception: number;
+  perceptionMax: number;
+  perceptionCurrent: number;
   gameState: GameStatus;
   currentTickClicks: number;
   totalClicks: number;
